@@ -29,3 +29,7 @@ class Adviser(object):
 		self.reqtdHrs 	= data[4]
 		self.maxHrs 	= data[5]
 		self.availability = data[6]
+
+	
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+	

@@ -28,6 +28,7 @@ class Schedule(object):
 	def __init__(self):
 		super().__init__()
 		
+		self._dayOrder = []
 		self._timeSlots = []
 		self._advisers = []
 		
@@ -71,7 +72,9 @@ class Schedule(object):
 			
 	def createSchedule(self):
 		settingsPage = self._guiMngr.getPage('Settings')
+		
 		self.timeSlotDuration = settingsPage.read(pos=(3,1))
+		self.timeSlotsPerHour = 60/self.timeSlotDuration
 		
 		settingsPage.validate()
 		
@@ -102,29 +105,16 @@ class Schedule(object):
 				densities.append(densityRng.getDensity())
 				
 		for dayIndex in range(len(times)):
+			self._dayOrder.append(times[dayIndex][0].getDay())
+		
 			row = []
 			for slot in times[dayIndex]:
 				row.append(TimeSlot(slot, densities[dayIndex]))
 			self._timeSlots.append(row)
+		print(self._dayOrder)
 
-
+		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-	def _readAdvisers(self):
-		adviserPage = self._guiMngr.getPage('Advisers')
-		
-		names = adviserPage.read(col=0)[1:]
-		endRow = names.index(None)
-		if endRow < 0:
-			return
-		
-		entries = adviserPage.getEntries(begin=(1, 0), end=(endRow, adviserPage.getEntryArray().numCols-1))
-		entries.validate()
-		
-		for entryRow in entries:
-			print(entryRow)
-			self._advisers.append(entryRow)
-
 
 	def _fillSchedule(self):
 		self._readAdvisers()
@@ -149,6 +139,24 @@ class Schedule(object):
 					slot.scheduleAdviser(maxAdviser)
 					competingAdvisers.remove(maxAdviser)
 					time.sleep(self.debugDelay)
+
+
+	def _readAdvisers(self):
+		adviserPage = self._guiMngr.getPage('Advisers')
+		
+		names = adviserPage.read(col=0)[1:]
+		endRow = names.index(None)
+		if endRow < 0:
+			return
+		
+		entries = adviserPage.getEntries(begin=(1, 0), end=(endRow, adviserPage.getEntryArray().numCols-1))
+		entries.validate()
+		
+		for entryRow in entries:
+			advData = [entry.get() for entry in entryRow]
+			
+			adviser = Adviser(advData)
+			self._addAdviser(adviser)
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -180,3 +188,18 @@ class Schedule(object):
 			entry.state(['readonly'])
 		for entry in page.getEntries(col=0):
 			entry.state(['readonly'])
+
+			
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+	def _addAdviser(self, adviser):
+		for time in adviser.availability:
+			for enumTimeRow in time.getEnumeratedTimes():
+				dayIndex = self._dayOrder.index(enumTimeRow[0].getDay())
+				dayRow = self._timeSlots[dayIndex]
+				
+				for enumTime in enumTimeRow:
+					hrIndex = int((enumTime.getHour()-dayRow[0].getTime().getHour()) * self.timeSlotsPerHour)
+					dayRow[hrIndex].addCompetingAdviser(adviser)
+				
+		self._advisers.append(adviser)

@@ -22,10 +22,20 @@ class TimeSlot(object):
 		
 		self._time = time
 		self._density = density
-
+		self._competingAdvisers = []
+		self._scheduledAdvisers = []
+		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
+	def addCompetingAdviser(self, adv):
+		self._competingAdvisers.append(adv)
+		
+		
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+	
+	def getTime(self):
+		return self._time
 	def getDay(self):
 		return self._time.format(day=True)
 	def getHour(self, mt=True):
@@ -35,4 +45,4 @@ class TimeSlot(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def __str__(self):
-		return str(self._time) + ' ' + str(self._density)
+		return str([adv.name for adv in self._competingAdvisers])

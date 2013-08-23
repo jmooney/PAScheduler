@@ -92,6 +92,8 @@ class _DayRngInputObject(InputObject):
 		return ';'		
 	def getDays(self):
 		return self._days[:]
+	def getDay(self):
+		return self._days[0]
 		
 
 		
@@ -219,6 +221,8 @@ class Time(_DayRngInputObject):
 	
 	def getHours(self):
 		return self._hours[:]
+	def getHour(self):
+		return self._hours[0]
 		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''	
