@@ -19,11 +19,13 @@ from EntryFieldArray import EntryFieldArray
 
 class NotebookPage(object):
 
-	def __init__(self, notebook, name, data={}):
+	def __init__(self, notebook, name, writeBegin, data={}):
 		super().__init__()
 		
 		self._name = name
 		self._owner = notebook
+		self._writeBegin = writeBegin
+		self._initData = data
 		
 		self._canvas = Canvas(notebook)
 		self._canvas.pack(side=LEFT, expand=True, fill=BOTH)
@@ -54,7 +56,19 @@ class NotebookPage(object):
 		raise NotImplementedError
 
 
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+	
+	def getName(self):	
+		return self._name
+	def getType(self):
+		return type(self).__name__
+	def getWriteBegin(self):
+		return self._writeBegin
+	def getCreationInits(self):
+		return self._initData
 
+
+		
 
 #----------------------------------------------------------------#
 
@@ -99,6 +113,8 @@ class EntryPage(NotebookPage):
 	
 	def read(self, **kwArgs):
 		return self.getEntries(**kwArgs).read()
+	def readRaw(self, **kwArgs):
+		return self.getEntries(**kwArgs).readRaw()
 	
 	def write(self, data, **kwArgs):
 		self._entryFieldArray.resizeToFit(data, **kwArgs)

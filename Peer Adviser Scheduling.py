@@ -12,6 +12,7 @@
 
 # Imports
 
+from FileManager import *
 from GuiManager import *
 from Schedule2 import *
 from EntryFieldArray import TypedEntry
@@ -21,11 +22,12 @@ from EntryFieldArray import TypedEntry
 
 def main():
 
-	schedule = Schedule()
+	schedule 		= Schedule()
+	gm 				= GuiManager(schedule)
+	fileManager 	= FileManager(gm, schedule)
 	
-	gm = GuiManager(schedule)
-	window = gm.createWindow()
-	
+	window = gm.createWindow(fileManager)
+
 	schedule.setGui(gm)
 	TypedEntry.createStyle()
 	

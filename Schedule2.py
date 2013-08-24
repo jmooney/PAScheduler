@@ -15,7 +15,7 @@
 from TimeSlot import *
 from Adviser import Adviser
 from NotebookPage import EntryPage
-from TimeObj import Time, DayDensity
+from TimeObj import Time
 
 
 #------------------------------------------------------------------#
@@ -45,30 +45,6 @@ class Schedule(object):
 	
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-		
-	def setGui(self, guiMngr):
-		self._guiMngr = guiMngr
-		
-		settingsPage = guiMngr.getPage('Settings')
-		settingsPage.write('Advising Hours\tM-Th 9-5; F 10-12\n' + \
-									'Number of Active Advisers\tM-Th 3; F 2\n' + \
-									'Time Slot Duration (minutes)\t15\n' + \
-									'Minimum Consecutive Hours\t1\n' + \
-									'Maximum Consecutive Hours\t3\n' + \
-									'Minimum Consecutibe Break Hours\t1.5\n' + \
-									'Maximum Hours per Week\t7', begin=(1,0))
-		
-		entryTypes = [[Time], [DayDensity], int, float, float, float, float]
-
-		descEntries = settingsPage.getEntries(col=0)
-		valueEntries = settingsPage.getEntries(col=1)[1:]
-		
-
-		for entry in descEntries:
-			entry.state(['readonly'])
-		for i in range(len(entryTypes)):
-			valueEntries[i].setType(entryTypes[i], True)
-
 			
 	def createSchedule(self):
 		settingsPage = self._guiMngr.getPage('Settings')
@@ -111,9 +87,8 @@ class Schedule(object):
 			for slot in times[dayIndex]:
 				row.append(TimeSlot(slot, densities[dayIndex]))
 			self._timeSlots.append(row)
-		print(self._dayOrder)
 
-		
+
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def _fillSchedule(self):
@@ -162,7 +137,7 @@ class Schedule(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def _createGUIPage(self):
-		page = self._guiMngr.createPage('Schedule', EntryPage, {'numRows':0, 'numCols':0})
+		page = self._guiMngr.createPage('Schedule', EntryPage, (1,1), {'numRows':0, 'numCols':0})
 		
 		timeBar = []
 		for timeSlot in max(self._timeSlots, key=len):
@@ -203,3 +178,26 @@ class Schedule(object):
 					dayRow[hrIndex].addCompetingAdviser(adviser)
 				
 		self._advisers.append(adviser)
+
+		
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+	
+	def setGui(self, gm):
+		self._guiMngr = gm
+	
+	def reset(self):
+		self._dayOrder = []
+		self._timeSlots = []
+		self._advisers = []
+		
+		self._advisingHours = ''
+		self._adviserDensity = ''
+		self.timeSlotDuration = 0
+		self._minBlockHours = 0
+		self._maxBlockHours = 0
+		self._minBreakHours = 0
+		self._minHoursPerWeek = 0
+	
+		self.setGui(self._guiMngr)
+		
+	

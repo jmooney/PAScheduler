@@ -48,6 +48,9 @@ class TypedEntry(ttk.Entry):
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''	
 	
+	def getRaw(self):
+		return super().get()
+		
 	def get(self):
 		val = super().get()
 		
@@ -193,6 +196,22 @@ class EntryFieldArray(object):
 					dataRow.append(entry.get())
 				data.append(dataRow)				
 			return data
+			
+			
+	def readRaw(self):
+		if self._isUnit:
+			return self._entries.getRaw()
+		elif self._is1DArray:
+			return [entry.getRaw() for entry in self._entries]
+		else:
+			data = []	
+			for row in self._entries:
+				dataRow = []
+				for entry in row:
+					dataRow.append(entry.getRaw())
+				data.append(dataRow)				
+			return data
+			
 			
 			
 	def write(self, data):
