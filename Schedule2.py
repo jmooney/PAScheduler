@@ -32,7 +32,7 @@ class Schedule(object):
 	def __init__(self):
 		super().__init__()
 
-		self._dayOrder = []
+		self.dayOrder = []
 		self._timeSlots = []
 		self._advisers = []
 
@@ -86,7 +86,7 @@ class Schedule(object):
 				densities.append(densityRng.getDensity())
 
 		for dayIndex in range(len(times)):
-			self._dayOrder.append(times[dayIndex][0].getDay())
+			self.dayOrder.append(times[dayIndex][0].getDay())
 
 			row = []
 			for i in range(len(times[dayIndex])):
@@ -130,17 +130,17 @@ class Schedule(object):
 	def _createSchedulePage2(self):
 		page = self._guiMngr.createPage('Adviser Schedule', EntryPage, {'numRows':0, 'numCols':0})
 		
-		dayBar = [''] + self._dayOrder
+		dayBar = [''] + self.dayOrder
 		page.write([dayBar], begin=(0,0))
 		
 		self._advisers.sort()
 		for i in range(len(self._advisers)):
 			adviser = self._advisers[i]
-			adviser.consolidateTimes()
+			adviser.someFunc()
 			
 			data = [[adviser.name]]
 			for day in dayBar[1:]:
-				data[0] = data[0] + adviser.scheduledTimesDict[day]
+				data[0].append(adviser.workHoursText[day])
 				
 			page.write(data, begin=(i+1, 0))
 		
@@ -213,7 +213,7 @@ class Schedule(object):
 	def _addAdviser(self, adviser):
 		for time in adviser.availability:
 			for enumTimeRow in time.getEnumeratedTimes():
-				dayIndex = self._dayOrder.index(enumTimeRow[0].getDay())
+				dayIndex = self.dayOrder.index(enumTimeRow[0].getDay())
 				dayRow = self._timeSlots[dayIndex]
 
 				for enumTime in enumTimeRow:
@@ -300,7 +300,7 @@ class Schedule(object):
 		self._guiMngr = gm
 
 	def reset(self):
-		self._dayOrder = []
+		self.dayOrder = []
 		self._timeSlots = []
 		self._advisers = []
 

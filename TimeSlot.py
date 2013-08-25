@@ -38,7 +38,10 @@ class TimeSlot(object):
 		adviser.scheduledTimes.append(self)
 		self._scheduledAdvisers.append(adviser)
 		
-		self._entry.insert(0, ('{} : {} {}, '.format(adviser.name, adviser.need, adviser.greed)))
+		first, temp, last = adviser.name.partition(' ')
+		
+		self._entry.insert(0, '{} {}. '.format(first, last[0]))
+		#self._entry.insert(0, ('{} : {} {}, '.format(adviser.name, adviser.need, adviser.greed)))
 		self._entry.update_idletasks()
 		
 		
@@ -64,8 +67,3 @@ class TimeSlot(object):
 	def getScheduledAdvisers(self):
 		return self._scheduledAdvisers
 		
-		
-	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-	
-	def __str__(self):
-		return str([adv.name for adv in self._scheduledAdvisers])

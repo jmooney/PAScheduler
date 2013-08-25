@@ -79,7 +79,7 @@ class FileManager(object):
 				 
 
 	def saveFile(self):
-		filename = filedialog.asksaveasfilename(defaultextension='.txt.',  filetypes=[('All types', '.*'), ('Schedule file', '.pas')]) if not self._workingFile else self._workingFile
+		filename = filedialog.asksaveasfilename(defaultextension='.pas.',  filetypes=[('All types', '.*'), ('Schedule file', '.pas')]) if not self._workingFile else self._workingFile
 		if not filename:
 			return False
 			

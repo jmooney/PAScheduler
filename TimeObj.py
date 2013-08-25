@@ -148,13 +148,47 @@ class Time(_DayRngInputObject):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def format(self, **options):
+		if options.get('range'):
+			options['range'] = False
+			
+			tempOptions = options.copy()
+			tempOptions.update({'_isRngEnd':True, '_hourIndex':-1})
+			
+			return '{}-{}'.format(self.format(**options), self.format(**tempOptions))
+			
 		if options.get('day'):
 			return self.getDay()
+			
 		elif options.get('hour'):
+			hourIndex = options.get('_hourIndex', 0)
+			hour = self._hours[hourIndex]
+			
 			if options.get('time') == 'Standard':
-				return  str(int(self._hours[0])) + ':' + \
-					"{0:0=2d}".format(int(self._hours[0]%1*self.minsPerHour) + (self.schedule.timeSlotDuration if options.get('end') else 0)) + \
-					('a' if self._hours[0] < 12 else 'p')
+				secondDigit = int(hour%1*self.minsPerHour) + (self.schedule.timeSlotDuration if options.get('_isRngEnd') else 0)
+				firstDigit = int(hour)
+				
+				if secondDigit >= 60:
+					firstDigit += int(secondDigit/60)
+					secondDigit = int(secondDigit%60 * self.minsPerHour)
+				if firstDigit > 12:
+					firstDigit = firstDigit-12
+					
+				needSD = options.get('_needSecondDigit', True) or secondDigit
+				
+				firstDigit = str(firstDigit)
+				concatChar = ':' if needSD else ''
+				secondDigit = '{0:0=2d}'.format( secondDigit ) if needSD else ''
+				endChar = 'a' if hour < 12 else 'p'
+				endChar = endChar if needSD else ''
+				
+				return '{}{}{}{}'.format(firstDigit, concatChar, secondDigit, endChar)
+				
+			elif options.get('time') == 'Condensed':
+				options['time'] = 'Standard';	options['_needSecondDigit']=False
+				return self.format(**options)
+				
+			else:
+				return str(int(self._hours[0]))
 				
 	
 	def getEnumeratedTimes(self):

@@ -12,7 +12,7 @@
 
 
 # Imports
-
+from TimeObj import Time
 
 
 #------------------------------------------------------------------#
@@ -32,43 +32,58 @@ class Adviser(object):
 		
 		self.nSchedSlots = 0
 		self.nAvailSlots = 0
+		self.workHoursText = {}
 		self.scheduledTimes = []
-		self.scheduledTimesDict = {}
+		self.consolidatedTimes = []
 	
 	
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
-	def consolidateTimes(self):
+	def someFunc(self):
 		if not self.scheduledTimes:
 			return
-			
-		for day in self.scheduledTimes[0].getTime().schedule._dayOrder:
-			self.scheduledTimesDict[day] = []
-	
-		return
 		
-		index = 0
-		currentSlot = startSlot = self.scheduledTimes[0]
-		currentDay = currentSlot.getDay()
+		dayHrData 	 = []
+		hoursInRange = []
+		prevSlot 		 = None
+		currentDay 	 = self.scheduledTimes[0].getDay()
 		
-		while index < len(self.scheduledTimes)-1:
-			nextSlot = self.scheduledTimes[index+1]
+		for timeSlot in self.scheduledTimes:
+			time = timeSlot.getTime()
+			day = timeSlot.getDay()
 			
-			if currentSlot.next != nextSlot:
-				print(currentSlot.getDay(), nextSlot.getDay())
+			if not prevSlot or timeSlot == prevSlot.next:
+				hoursInRange.append(time.getHour())
 				
-				endSlot = currentSlot
-				self.scheduledTimesDict[currentDay].append('{}-{}'.format( \
-					startSlot.getTime().format(hour=True, time='Standard'), endSlot.getTime().format(hour=True, end=True, time='Standard')))
-				
-				startSlot=nextSlot
-				if startSlot.getDay() != currentDay:
-					currentDay = startSlot.getDay()
-					self.scheduledTimesDict[currentDay] = []
-					
-			currentSlot = nextSlot
-			index+=1
+			else:
+				dayHrData.append(Time( ([currentDay], hoursInRange) ))
+				hoursInRange = [time.getHour()]
 			
+				if day != currentDay:
+					currentDay = day
+					self.consolidatedTimes.append(dayHrData)
+					dayHrData = []
+			
+			prevSlot = timeSlot
+		
+		if hoursInRange:
+			newTime = Time( ([currentDay], hoursInRange) )
+			dayHrData.append(Time( ([currentDay], hoursInRange) ))
+			
+		if dayHrData:
+			self.consolidatedTimes.append(dayHrData)
+		
+		for day in Time.schedule.dayOrder:
+			self.workHoursText[day] = ''
+			
+		for day in self.consolidatedTimes:
+			text = ''
+			for timeRng in day:
+				text += timeRng.format(hour=True, time='Condensed', range=True) + " "
+			self.workHoursText[timeRng.getDay()] = text
+
+		
+		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
