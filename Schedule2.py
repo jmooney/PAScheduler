@@ -26,7 +26,7 @@ from EntryFieldArray import InputError
 
 class Schedule(object):
 
-	debugDelay = .5
+	debugDelay = 0
 
 
 	def __init__(self):
@@ -68,8 +68,9 @@ class Schedule(object):
 			return
 
 		self._createTimeSlots()
-		self._createGUIPage()
+		self._createSchedulePage1()
 		self._fillSchedule()
+		self._createSchedulePage2()
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -93,7 +94,7 @@ class Schedule(object):
 			self._timeSlots.append(row)
 
 
-	def _createGUIPage(self):
+	def _createSchedulePage1(self):
 		page = self._guiMngr.createPage('Schedule', EntryPage, {'numRows':0, 'numCols':0})
 
 		timeBar = []
@@ -124,6 +125,28 @@ class Schedule(object):
 			entry.state(['readonly'])
 		self._guiMngr.getNotebook().select(self._guiMngr.getNotebook().tabs()[-1])
 		self._guiMngr.getNotebook().update_idletasks()
+		
+		
+	def _createSchedulePage2(self):
+		page = self._guiMngr.createPage('Adviser Schedule', EntryPage, {'numRows':0, 'numCols':0})
+		
+		dayBar = [''] + self._dayOrder
+		page.write([dayBar], begin=(0,0))
+		
+		self._advisers.sort()
+		for i in range(len(self._advisers)):
+			adviser = self._advisers[i]
+			adviser.consolidateTimes()
+			
+			data = [[adviser.name]]
+			for day in dayBar[1:]:
+				data[0] = data[0] + adviser.scheduledTimesDict[day]
+				
+			page.write(data, begin=(i+1, 0))
+		
+		page.getEntries(pos=(0,0)).get().state(['disabled'])
+		for entry in page.getEntries(row=0)[1:]:
+			entry.state(['readonly'])
 
 
 	def _fillSchedule(self):
@@ -147,7 +170,6 @@ class Schedule(object):
 						self._calculateGreed(adviser, slot, numPrev)
 						if adviser > maxAdviser:
 							maxAdviser = adviser
-						print('Adviser: ', adviser.name, numPrev, numAfter, breakSize, adviser.minSlots, adviser.reqSlots, adviser.maxSlots)
 
 					slot.scheduleAdviser(maxAdviser)
 					competingAdvisers.remove(maxAdviser)

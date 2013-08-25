@@ -149,10 +149,12 @@ class Time(_DayRngInputObject):
 	
 	def format(self, **options):
 		if options.get('day'):
-			return self._days[0]
+			return self.getDay()
 		elif options.get('hour'):
 			if options.get('time') == 'Standard':
-				return  str(int(self._hours[0])) + ':' + "{0:0=2d}".format(int(self._hours[0]%1*self.minsPerHour)) + ('a' if self._hours[0] < 12 else 'p')
+				return  str(int(self._hours[0])) + ':' + \
+					"{0:0=2d}".format(int(self._hours[0]%1*self.minsPerHour) + (self.schedule.timeSlotDuration if options.get('end') else 0)) + \
+					('a' if self._hours[0] < 12 else 'p')
 				
 	
 	def getEnumeratedTimes(self):
