@@ -26,3 +26,11 @@ def dictionaryToOrderedList(dict, keyOrder):
 			continue
 			
 	return newList
+	
+	
+def pos(num):
+	return num if num > 0 else 0
+	
+def getAverage(nums):
+	return sum(nums)/len(nums)
+	

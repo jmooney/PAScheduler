@@ -17,7 +17,7 @@
 
 class TimeSlot(object):
 	
-	def __init__(self, time, density):
+	def __init__(self, time, density, prev):
 		super().__init__()
 		
 		self._time = time
@@ -25,11 +25,21 @@ class TimeSlot(object):
 		self._competingAdvisers = []
 		self._scheduledAdvisers = []
 		
+		self.next = None
+		self.prev = prev
+		if prev:
+			prev.next = self
+		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
-	def addCompetingAdviser(self, adv):
-		self._competingAdvisers.append(adv)
+	def scheduleAdviser(self, adviser):
+		adviser.nSchedSlots += 1
+		adviser.scheduledTimes.append(self)
+		self._scheduledAdvisers.append(adviser)
+		
+		self._entry.insert(0, ('{} : {} {}, '.format(adviser.name, adviser.need, adviser.greed)))
+		self._entry.update_idletasks()
 		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -40,9 +50,22 @@ class TimeSlot(object):
 		return self._time.format(day=True)
 	def getHour(self, mt=True):
 		return self._time.format(hour=True, time='Standard')
+	def getDensity(self):
+		return self._density
+	
+	def setEntry(self, e):
+		self._entry = e
+		
+	def addCompetingAdviser(self, adv):
+		adv.nAvailSlots += 1
+		self._competingAdvisers.append(adv)
+	def getCompetingAdvisers(self):
+		return self._competingAdvisers
+	def getScheduledAdvisers(self):
+		return self._scheduledAdvisers
 		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def __str__(self):
-		return str([adv.name for adv in self._competingAdvisers])
+		return str([adv.name for adv in self._scheduledAdvisers])

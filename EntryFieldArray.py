@@ -13,7 +13,7 @@
 
 # Imports
 from tkinter import ttk
-
+from tkinter import END
 
 #-----------------------------------------------------#
 
@@ -156,7 +156,7 @@ class EntryFieldArray(object):
 				
 	def setColumnTypes(self, columnTuples):
 		for columnTuple in columnTuples:
-			for entry in self.getColumn(columnTuple[0]):
+			for entry in self.getColumn(columnTuple[0])[1:]:
 				
 				required = False
 				if len(columnTuple) > 2:
@@ -218,15 +218,18 @@ class EntryFieldArray(object):
 		data = self._parseWriteData(data)
 				
 		if self._isUnit:
+			self._entries.delete(0, END)
 			self._entries.insert(0, str(data))
 		
 		elif self._is1DArray:
 			for i in range(len(data)):
+				self._entries[i].delete(0, END)
 				self._entries[i].insert(0, str(data[i]))
 		
 		else:
 			for i in range(len(data)):
 				for j in range(len(data[i])):
+					self._entries[i][j].delete(0, END)
 					self._entries[i][j].insert(0, str(data[i][j]))
 				
 	
@@ -384,6 +387,12 @@ class EntryFieldSubArray(EntryFieldArray):
 		
 	
 	
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+	
+	def get(self):
+		return self._entries
+		
+		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def resize(self):

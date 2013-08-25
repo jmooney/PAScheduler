@@ -13,8 +13,9 @@
 # Imports
 from tkinter import *
 from tkinter import ttk
-from TimeObj import Time, DayDensity
 from NotebookPage import *
+from TimeObj import Time, DayDensity
+from EntryFieldArray import InputError
 
 
 #------------------------------------------------------------------#
@@ -68,10 +69,10 @@ class GuiManager(object):
 		self._menuFile.add_command(label="Open...", command=fileManager.openFile)
 		self._menuFile.add_command(label="Save", command=fileManager.saveFile)
 		self._menuFile.add_command(label="Save As...", command=fileManager.saveFileAs)
-		self._menuFile.add_command(label="Export to Excel...")
-		self._menuFile.add_command(label="Export to PDF...")
+		self._menuFile.add_command(label="Save Page As...", command=fileManager.savePageAs)
 		self._menuFile.add_command(label='Quit', command=quit)
 		self._menuSchedule.add_command(label="Create", command=self._schedule.createSchedule)
+		self._menuSchedule.add_command(label="Validate", command=self._validateInput)
 		self._window['menu'] = self._menubar
 	
 	
@@ -83,23 +84,25 @@ class GuiManager(object):
 		self._hzScrollBar = ttk.Scrollbar(self._topFrame, orient=HORIZONTAL);	self._hzScrollBar.grid(row=1, column=0, sticky=(N,W,E,S))
 		self._vScrollBar = ttk.Scrollbar(self._topFrame, orient=VERTICAL);		self._vScrollBar.grid(row=0, column=1, sticky=(N,W,E,S))
 		
-		self.createPage('Advisers', EntryPage, (1, 0), {'numRows':30, 'numCols':7, 'title':[['Name', 'Major', 'Year', 'Min. Hrs', 'Req. Hrs', 'Max Hrs.', 'Availability'], {'row':0}], 'width':[(0, 25), (6, 70)], \
+		self.createPage('Advisers', EntryPage, {'numRows':30, 'numCols':7, 'title':[['Name', 'Major', 'Year', 'Min. Hrs', 'Req. Hrs', 'Max Hrs.', 'Availability'], {'row':0}], 'width':[(0, 25), (6, 70)], \
 																'type':[(1, str, True), (2, int, True), (3, float), (4, float), (5, float), (6, [Time], True)]})
 																
-		self.createPage('Settings', EntryPage, (1, 0), {'numRows':10, 'numCols':2, 'title':[['Description', 'Value'], {'row':0}], 'width':[(0,70)]})
+		self.createPage('Settings', EntryPage, {'numRows':10, 'numCols':2, 'title':[['Description', 'Value'], {'row':0}], 'width':[(0,70)]})
 		self._createSettings()
 	
 	
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
-	def createPage(self, name, pageType, pageDataBegin, pageData):
-		self._pages[name] = pageType(self._notebook, name, pageDataBegin, pageData)
+	def createPage(self, name, pageType, pageData):
+		self._pages[name] = pageType(self._notebook, name, pageData)
 		return self._pages[name]
 		
 	def getPage(self, name):
 		return self._pages[name]
 	def getPages(self):
 		return self._pages
+	def getNotebook(self):
+		return self._notebook
 		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -134,6 +137,20 @@ class GuiManager(object):
 			
 			
 		
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+	
+	def _validateInput(self):
+		try:
+			current = self._notebook.select()
+			
+			self._schedule.getValidAdviserEntries()
+			self._notebook.select(self._notebook.tabs()[1])
+			self._pages['Settings'].validate()
+			self._notebook.select(current)
+		except InputError:
+			pass
+				
+	
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 		
 	def reset(self):

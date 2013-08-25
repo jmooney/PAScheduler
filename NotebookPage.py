@@ -12,6 +12,7 @@
 
 # Imports
 from tkinter import *
+from tkinter import ttk
 from EntryFieldArray import EntryFieldArray
 
 
@@ -19,13 +20,11 @@ from EntryFieldArray import EntryFieldArray
 
 class NotebookPage(object):
 
-	def __init__(self, notebook, name, writeBegin, data={}):
+	def __init__(self, notebook, name, data={}):
 		super().__init__()
 		
 		self._name = name
 		self._owner = notebook
-		self._writeBegin = writeBegin
-		self._initData = data
 		
 		self._canvas = Canvas(notebook)
 		self._canvas.pack(side=LEFT, expand=True, fill=BOTH)
@@ -60,13 +59,6 @@ class NotebookPage(object):
 	
 	def getName(self):	
 		return self._name
-	def getType(self):
-		return type(self).__name__
-	def getWriteBegin(self):
-		return self._writeBegin
-	def getCreationInits(self):
-		return self._initData
-
 
 		
 
