@@ -14,6 +14,7 @@
 from tkinter import *
 from tkinter import ttk
 from NotebookPage import *
+from functools import partial
 from TimeObj import Time, DayDensity
 from EntryFieldArray import InputError
 
@@ -43,6 +44,7 @@ class GuiManager(object):
 		win.columnconfigure(0, weight=1)
 		win.option_add('*tearOff', FALSE)
 		win.minsize(400, 300)
+		win.protocol("WM_DELETE_WINDOW", fileManager.askQuit)
 		
 		self._createMenu(fileManager)
 
@@ -70,9 +72,17 @@ class GuiManager(object):
 		self._menuFile.add_command(label="Save", command=fileManager.saveFile)
 		self._menuFile.add_command(label="Save As...", command=fileManager.saveFileAs)
 		self._menuFile.add_command(label="Save Page As...", command=fileManager.savePageAs)
-		self._menuFile.add_command(label='Quit', command=quit)
+		self._menuFile.add_separator()
+		self._menuFile.add_command(label='Quit', command=fileManager.askQuit)
 		self._menuSchedule.add_command(label="Create", command=self._schedule.createSchedule)
 		self._menuSchedule.add_command(label="Validate", command=self._validateInput)
+		self._menuSchedule.add_separator()
+		self._menuSchedule.add_command(label="Sort Alphabetically", command=partial(self._schedule.sortDisplay, lambda adviser:adviser.name))
+		self._menuSchedule.add_command(label="Sort By Major", command=partial(self._schedule.sortDisplay, lambda adviser:adviser.major))
+		self._menuSchedule.add_separator()
+		self._menuSchedule.add_command(label="View Names", command=partial(self._schedule.display, lambda adviser:adviser.getShortName()))
+		self._menuSchedule.add_command(label="View Majors", command=partial(self._schedule.display, lambda adviser:adviser.major))
+		self._menuSchedule.add_command(label="View Years", command=partial(self._schedule.display, lambda adviser:adviser.year))
 		self._window['menu'] = self._menubar
 	
 	

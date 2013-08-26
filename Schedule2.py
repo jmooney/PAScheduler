@@ -71,6 +71,15 @@ class Schedule(object):
 		self._createSchedulePage1()
 		self._fillSchedule()
 		self._createSchedulePage2()
+		
+		
+	def sortDisplay(self):
+		pass
+		
+	def display(self, func):
+		for row in self._timeSlots:
+			for slot in row:
+				slot.displayText(func)
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -126,28 +135,6 @@ class Schedule(object):
 		self._guiMngr.getNotebook().select(self._guiMngr.getNotebook().tabs()[-1])
 		self._guiMngr.getNotebook().update_idletasks()
 		
-		
-	def _createSchedulePage2(self):
-		page = self._guiMngr.createPage('Adviser Schedule', EntryPage, {'numRows':0, 'numCols':0})
-		
-		dayBar = [''] + self.dayOrder
-		page.write([dayBar], begin=(0,0))
-		
-		self._advisers.sort()
-		for i in range(len(self._advisers)):
-			adviser = self._advisers[i]
-			adviser.someFunc()
-			
-			data = [[adviser.name]]
-			for day in dayBar[1:]:
-				data[0].append(adviser.workHoursText[day])
-				
-			page.write(data, begin=(i+1, 0))
-		
-		page.getEntries(pos=(0,0)).get().state(['disabled'])
-		for entry in page.getEntries(row=0)[1:]:
-			entry.state(['readonly'])
-
 
 	def _fillSchedule(self):
 		self._readAdvisers()
@@ -157,11 +144,12 @@ class Schedule(object):
 
 				competingAdvisers = slot.getCompetingAdvisers()
 				if not competingAdvisers:
+					slot.getEntry().setInvalid()
 					continue
 
 				for i in range(slot.getDensity()):
 					if not competingAdvisers:
-						break
+						continue
 
 					maxAdviser = competingAdvisers[0]
 					for adviser in competingAdvisers:
@@ -178,6 +166,28 @@ class Schedule(object):
 
 				for adv in competingAdvisers:
 					adv.nAvailSlots-=1
+					
+					
+	def _createSchedulePage2(self):
+		page = self._guiMngr.createPage('Adviser Schedule', EntryPage, {'numRows':0, 'numCols':0})
+		
+		dayBar = [''] + self.dayOrder
+		page.write([dayBar], begin=(0,0))
+		
+		self._advisers.sort(key=lambda x:x.name.partition(' ')[2])
+		for i in range(len(self._advisers)):
+			adviser = self._advisers[i]
+			adviser.consolidateHours()
+			
+			data = [[adviser.name]]
+			for day in dayBar[1:]:
+				data[0].append(adviser.workHoursText[day])
+				
+			page.write(data, begin=(i+1, 0))
+		
+		page.getEntries(pos=(0,0)).get().state(['disabled'])
+		for entry in page.getEntries(row=0)[1:]:
+			entry.state(['readonly'])
 
 
 

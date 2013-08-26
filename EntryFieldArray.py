@@ -76,6 +76,11 @@ class TypedEntry(ttk.Entry):
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''	
 	
+	def setInvalid(self):
+		self['style'] = self._invalidEntryStyle
+	def setValid(self):
+		self['style'] = 'TEntry'
+		
 	def setType(self, type, req=False):
 		self._isArray = isinstance(type, list)
 		self._type = type if not self._isArray else type[0]

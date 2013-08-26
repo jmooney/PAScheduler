@@ -110,6 +110,14 @@ class FileManager(object):
 			pageId = self._guiMngr.getNotebook().select()
 			page = self._guiMngr.getPage(self._guiMngr.getNotebook().tab(pageId, 'text'))
 			self._writePageData(page, file, (0,0), '')
+			
+			
+	def askQuit(self):
+		if self._isAltered:
+			message = self._askSaveDialog()
+			if (message and not self.saveFile()) or message == None:
+				return
+		quit()
 				
 				
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

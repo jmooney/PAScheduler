@@ -24,7 +24,7 @@ class Adviser(object):
 		
 		self.name 		= data[0]
 		self.major 		= data[1]
-		self.year 			= data[2]
+		self.year 		= data[2]
 		self.minSlots 	= data[3]
 		self.reqSlots 	= data[4]
 		self.maxSlots 	= data[5]
@@ -39,7 +39,7 @@ class Adviser(object):
 	
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
-	def someFunc(self):
+	def consolidateHours(self):
 		if not self.scheduledTimes:
 			return
 		
@@ -83,6 +83,13 @@ class Adviser(object):
 			self.workHoursText[timeRng.getDay()] = text
 
 		
+		
+		
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+	
+	def getShortName(self):
+		first, temp, last = self.name.partition(' ')
+		return '{} {}. '.format(first, last[0])
 		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

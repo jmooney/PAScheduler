@@ -11,7 +11,7 @@
 '''
 
 # Imports
-
+from tkinter import END
 
 #------------------------------------------------------------------#
 
@@ -36,13 +36,18 @@ class TimeSlot(object):
 	def scheduleAdviser(self, adviser):
 		adviser.nSchedSlots += 1
 		adviser.scheduledTimes.append(self)
+		
 		self._scheduledAdvisers.append(adviser)
-		
-		first, temp, last = adviser.name.partition(' ')
-		
-		self._entry.insert(0, '{} {}. '.format(first, last[0]))
-		#self._entry.insert(0, ('{} : {} {}, '.format(adviser.name, adviser.need, adviser.greed)))
+		self._entry.insert(0, adviser.getShortName())
 		self._entry.update_idletasks()
+	
+	
+	def displayText(self, func):
+		text = ''
+		for adv in self._scheduledAdvisers:
+			text += str(func(adv)) + ' '
+		self._entry.delete(0, END)
+		self._entry.insert(0, text)
 		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -58,6 +63,8 @@ class TimeSlot(object):
 	
 	def setEntry(self, e):
 		self._entry = e
+	def getEntry(self):
+		return self._entry
 		
 	def addCompetingAdviser(self, adv):
 		adv.nAvailSlots += 1
