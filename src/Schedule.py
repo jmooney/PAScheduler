@@ -14,7 +14,7 @@
 # Imports
 import math
 import time
-import bin.tools as tools
+import src.tools as tools
 from .TimeSlot import *
 from .TimeObj import Time
 from .Adviser import Adviser

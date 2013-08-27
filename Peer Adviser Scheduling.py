@@ -14,10 +14,10 @@
 
 
 
-from bin.FileManager import *
-from bin.GuiManager import *
-from bin.Schedule import *
-from bin.EntryFieldArray import TypedEntry
+from src.FileManager import *
+from src.GuiManager import *
+from src.Schedule import *
+from src.EntryFieldArray import TypedEntry
 
 
 #------------------------------------------------------------------#
@@ -25,7 +25,7 @@ from bin.EntryFieldArray import TypedEntry
 def main():
 
 	schedule 		= Schedule()
-	gm 					= GuiManager(schedule)
+	gm 				= GuiManager(schedule)
 	fileManager 	= FileManager(gm, schedule)
 	
 	window = gm.createWindow(fileManager)
