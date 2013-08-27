@@ -38,7 +38,7 @@ class GuiManager(object):
 	
 	def createWindow(self, fileManager):
 		win = self._window = Tk()
-		win.title("Peer Adviser Scheduling")
+		win.title("VSE Peer Advising Scheduling Program v2.00")
 		win.geometry("800x600")
 		win.rowconfigure(0, weight=1)
 		win.columnconfigure(0, weight=1)
