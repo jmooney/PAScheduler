@@ -14,6 +14,7 @@
 # Imports
 from tkinter import ttk
 from tkinter import END
+from tkinter import font
 
 #-----------------------------------------------------#
 

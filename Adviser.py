@@ -28,7 +28,7 @@ class Adviser(object):
 		self.year 		= data[3]
 		self.minSlots 	= data[4]
 		self.reqSlots 	= data[5]
-		self.maxSlots = data[6]
+		self.maxSlots 	= data[6]
 		self.availability = data[7]
 		
 		self.nSchedSlots = 0
@@ -70,13 +70,11 @@ class Adviser(object):
 		if hoursInRange:
 			newTime = Time( ([currentDay], hoursInRange) )
 			dayHrData.append(Time( ([currentDay], hoursInRange) ))
-			
 		if dayHrData:
 			self.consolidatedTimes.append(dayHrData)
 		
 		for day in Time.schedule.dayOrder:
 			self.workHoursText[day] = ''
-			
 		for day in self.consolidatedTimes:
 			text = ''
 			for timeRng in day:
@@ -88,9 +86,27 @@ class Adviser(object):
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
-	def getShortName(self):
-		first, temp, last = self.name.partition(' ')
-		return '{} {}. '.format(first, last[0])
+	def formatStr(self, **options):
+		firstName = self.name.partition(' ')[0]
+		lastName = self.name.partition(' ')[2]
+
+		text = ''
+		nameType = options.get('name')
+		if nameType == 'first':
+			text = '{} {}.'.format(firstName, lastName[0])
+		elif nameType == 'last':
+			text = '{}, {}.'.format(lastName, firstName[0])
+			
+		if options.get('major'):
+			text += ' ({})'.format(self.major)
+		if options.get('email'):
+			text += ' ' + self.email
+		if options.get('year'):
+			text += ' ' + str(self.year)
+			
+		if not text:
+			return self.formatStr(name='last')
+		return text
 		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''

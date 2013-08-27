@@ -31,7 +31,7 @@ class GuiManager(object):
 		super().__init__()
 		
 		self._schedule = schedule
-		self._pages = {}	
+		self._pages = {}
 		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -61,6 +61,12 @@ class GuiManager(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def _createMenu(self, fileManager):
+		self._firstCheckMenu = StringVar()
+		self._lastCheckMenu = StringVar()
+		self._majorCheckMenu = StringVar()
+		self._emailCheckMenu = StringVar()
+		self._yearCheckMenu = StringVar()
+		
 		self._menubar = Menu(self._window)
 		self._menuFile = Menu(self._menubar)
 		self._menuSchedule = Menu(self._menubar)
@@ -77,12 +83,14 @@ class GuiManager(object):
 		self._menuSchedule.add_command(label="Create", command=self._schedule.createSchedule)
 		self._menuSchedule.add_command(label="Validate", command=self._validateInput)
 		self._menuSchedule.add_separator()
-		self._menuSchedule.add_command(label="Sort Alphabetically", command=partial(self._schedule.sortDisplay, lambda adviser:adviser.name))
-		self._menuSchedule.add_command(label="Sort By Major", command=partial(self._schedule.sortDisplay, lambda adviser:adviser.major))
+		self._menuSchedule.add_command(label="Sort By Last Name", command=partial(self._schedule.sortAdvisers, lambda adviser:adviser.name.partition(' ')[2]))
+		self._menuSchedule.add_command(label="Sort By Major", command=partial(self._schedule.sortAdvisers, lambda adviser:adviser.major))
 		self._menuSchedule.add_separator()
-		self._menuSchedule.add_command(label="View Names", command=partial(self._schedule.display, lambda adviser:adviser.getShortName()))
-		self._menuSchedule.add_command(label="View Majors", command=partial(self._schedule.display, lambda adviser:adviser.major))
-		self._menuSchedule.add_command(label="View Years", command=partial(self._schedule.display, lambda adviser:adviser.year))
+		self._menuSchedule.add_checkbutton(label="View First Name", variable=self._firstCheckMenu, onvalue='first', offvalue='', command=self._schedule.updateText)
+		self._menuSchedule.add_checkbutton(label="View Last Name", variable=self._lastCheckMenu, onvalue='last', offvalue='', command=self._schedule.updateText)
+		self._menuSchedule.add_checkbutton(label="View Major", variable=self._majorCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
+		self._menuSchedule.add_checkbutton(label="View Email", variable=self._emailCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
+		self._menuSchedule.add_checkbutton(label="View Year", variable=self._yearCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
 		self._window['menu'] = self._menubar
 	
 	
@@ -94,13 +102,37 @@ class GuiManager(object):
 		self._hzScrollBar = ttk.Scrollbar(self._topFrame, orient=HORIZONTAL);	self._hzScrollBar.grid(row=1, column=0, sticky=(N,W,E,S))
 		self._vScrollBar = ttk.Scrollbar(self._topFrame, orient=VERTICAL);		self._vScrollBar.grid(row=0, column=1, sticky=(N,W,E,S))
 		
-		self.createPage('Advisers', EntryPage, {'numRows':30, 'numCols':8, 'title':[['Name', 'Email', 'Major', 'Year', 'Min. Hrs', 'Req. Hrs', 'Max Hrs.', 'Availability'], {'row':0}], 'width':[(0, 25), (1, 25), (7, 70)], \
+		self.createPage('Advisers', EntryPage, {'numRows':31, 'numCols':8, 'title':[['Name', 'Email', 'Major', 'Year', 'Min. Hrs', 'Req. Hrs', 'Max Hrs.', 'Availability'], {'row':0}], 'width':[(0, 25), (1, 25), (7, 70)], \
 																'type':[(1, str, True), (2, str, True), (3, int, True), (4, float), (5, float), (6, float), (7, [Time], True)]})
 																
 		self.createPage('Settings', EntryPage, {'numRows':10, 'numCols':2, 'title':[['Description', 'Value'], {'row':0}], 'width':[(0,70)]})
 		self._createSettings()
 	
 	
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+	
+	def getViewOptions(self):
+		keys = ['name', 'major', 'email', 'year']
+		
+		if self._firstCheckMenu.get():
+			values = ['first']
+		elif self._lastCheckMenu.get():
+			values = ['last']
+		else:
+			values = ['']
+		
+		boolSVars = [self._majorCheckMenu, self._emailCheckMenu, self._yearCheckMenu]
+		for sVar in boolSVars:
+			val = sVar.get()
+			values.append(bool(int(val)) if val else False)
+			
+		ops = {}
+		for i in range(len(keys)):
+			ops[keys[i]] = values[i]
+		return ops
+			
+		
+		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def createPage(self, name, pageType, pageData):
@@ -146,7 +178,6 @@ class GuiManager(object):
 			valueEntries[i].setType(entryTypes[i], True)
 			
 			
-		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def _validateInput(self):

@@ -73,15 +73,18 @@ class Schedule(object):
 		self._createSchedulePage2()
 		
 		
-	def sortDisplay(self):
-		pass
-		
-	def display(self, func):
+	def updateText(self):
+		displayOptions = self._guiMngr.getViewOptions()
 		for row in self._timeSlots:
 			for slot in row:
-				slot.displayText(func)
+				slot.displayText(displayOptions)
+		self._writeAdviserSchedule(displayOptions)
+		
+	def sortAdvisers(self, func):
+		self._advisers.sort(key=func)
+		self._writeAdviserSchedule(self._guiMngr.getViewOptions())
 
-
+		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def _createTimeSlots(self):
@@ -109,15 +112,14 @@ class Schedule(object):
 		timeBar = []
 		for timeSlot in max(self._timeSlots, key=len):
 			timeBar.append(timeSlot.getHour(mt=False))
-
-		dayBar = []
-		for dayRow in self._timeSlots:
-			day = dayRow[0].getDay()
-			dayBar.append([day])
+		dayBar = [[day] for day in self.dayOrder]
 
 		page.write([timeBar], begin=(0, 1))
+		page.getEntryArray().setColumnWidths([(i+1, 30) for i in range(len(timeBar))])
+		
 		page.write(dayBar, begin=(1, 0))
-
+		page.getEntryArray().setColumnWidths([(0, 10)])
+		
 		for dayIndex in range(len(self._timeSlots)):
 			dayRow = self._timeSlots[dayIndex]
 
@@ -141,7 +143,6 @@ class Schedule(object):
 
 		for dayRow in self._timeSlots:
 			for slot in dayRow:
-
 				competingAdvisers = slot.getCompetingAdvisers()
 				if not competingAdvisers:
 					slot.getEntry().setInvalid()
@@ -159,35 +160,30 @@ class Schedule(object):
 						if adviser > maxAdviser:
 							maxAdviser = adviser
 
-					slot.scheduleAdviser(maxAdviser)
+					slot.scheduleAdviser(maxAdviser, self._guiMngr.getViewOptions())
 					competingAdvisers.remove(maxAdviser)
 					competingAdvisers.sort()
 					time.sleep(self.debugDelay)
-
+				
 				for adv in competingAdvisers:
 					adv.nAvailSlots-=1
-					
+			
 					
 	def _createSchedulePage2(self):
 		page = self._guiMngr.createPage('Adviser Schedule', EntryPage, {'numRows':0, 'numCols':0})
+		for adviser in self._advisers:
+			adviser.consolidateHours()
 		
 		dayBar = [''] + self.dayOrder
 		page.write([dayBar], begin=(0,0))
 		
-		self._advisers.sort(key=lambda x:x.name.partition(' ')[2])
-		for i in range(len(self._advisers)):
-			adviser = self._advisers[i]
-			adviser.consolidateHours()
-			
-			data = [[adviser.name]]
-			for day in dayBar[1:]:
-				data[0].append(adviser.workHoursText[day])
-				
-			page.write(data, begin=(i+1, 0))
-		
 		page.getEntries(pos=(0,0)).get().state(['disabled'])
 		for entry in page.getEntries(row=0)[1:]:
 			entry.state(['readonly'])
+		
+		self._advisers.sort(key=lambda x:x.name.partition(' ')[2])
+		self._writeAdviserSchedule(self._guiMngr.getViewOptions())
+		page.getEntryArray().setColumnWidths([(0, 50)])
 
 
 
@@ -207,15 +203,24 @@ class Schedule(object):
 		entries = self.getValidAdviserEntries()
 		for entryRow in entries:
 			advData = [entry.get() for entry in entryRow]
-
-
-			advData[3] = advData[3] if advData[3] != None else self._minBlockHours
-			advData[4] = advData[4] if advData[4] != None else (self._maxBlockHours+self._minBlockHours)/2
-			advData[5] = advData[5] if advData[5] != None else self._maxBlockHours
-			advData[3:6] = [d*self.timeSlotsPerHour for d in advData[3:6]]
-
+			
+			advData[4] = advData[4] if advData[4] != None else self._minBlockHours
+			advData[5] = advData[5] if advData[5] != None else (self._maxBlockHours+self._minBlockHours)/2
+			advData[6] = advData[6] if advData[6] != None else self._maxBlockHours
+			advData[4:7] = [d*self.timeSlotsPerHour for d in advData[4:7]]
+			
 			adviser = Adviser(advData)
 			self._addAdviser(adviser)
+			
+			
+	def _writeAdviserSchedule(self, displayOptions):
+		for i in range(len(self._advisers)):
+			adviser = self._advisers[i]
+			
+			data = [[adviser.formatStr(**displayOptions)]]
+			for day in self.dayOrder:
+				data[0].append(adviser.workHoursText[day])
+			self._guiMngr.getPage('Adviser Schedule').write(data, begin=(i+1, 0))
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -254,7 +259,6 @@ class Schedule(object):
 		personalNeed = tools.pos(adviser.minSlots-adviser.nSchedSlots) + tools.pos(adviser.minSlots-adviser.nAvailSlots)
 
 		possibleConsecSize = numSlotsPrev+1+numSlotsAfter
-		print(adviser.maxSlots, self._maxSlotsPerWeek)
 		if breakSize and breakSize < self._minBreakSlots:
 			adviser.need = -1
 		if possibleConsecSize < adviser.minSlots:

@@ -33,19 +33,19 @@ class TimeSlot(object):
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
-	def scheduleAdviser(self, adviser):
+	def scheduleAdviser(self, adviser, options):
 		adviser.nSchedSlots += 1
 		adviser.scheduledTimes.append(self)
 		
 		self._scheduledAdvisers.append(adviser)
-		self._entry.insert(0, adviser.getShortName())
+		self._entry.insert(0, adviser.formatStr(**options) + ' ')
 		self._entry.update_idletasks()
 	
 	
-	def displayText(self, func):
+	def displayText(self, fmtOptions):
 		text = ''
 		for adv in self._scheduledAdvisers:
-			text += str(func(adv)) + ' '
+			text += adv.formatStr(**fmtOptions) + ' '
 		self._entry.delete(0, END)
 		self._entry.insert(0, text)
 		
