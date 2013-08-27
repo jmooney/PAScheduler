@@ -23,12 +23,13 @@ class Adviser(object):
 		super().__init__()
 		
 		self.name 		= data[0]
-		self.major 		= data[1]
-		self.year 		= data[2]
-		self.minSlots 	= data[3]
-		self.reqSlots 	= data[4]
-		self.maxSlots 	= data[5]
-		self.availability = data[6]
+		self.email		= data[1]
+		self.major 		= data[2]
+		self.year 		= data[3]
+		self.minSlots 	= data[4]
+		self.reqSlots 	= data[5]
+		self.maxSlots = data[6]
+		self.availability = data[7]
 		
 		self.nSchedSlots = 0
 		self.nAvailSlots = 0

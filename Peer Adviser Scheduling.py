@@ -23,7 +23,7 @@ from EntryFieldArray import TypedEntry
 def main():
 
 	schedule 		= Schedule()
-	gm 				= GuiManager(schedule)
+	gm 					= GuiManager(schedule)
 	fileManager 	= FileManager(gm, schedule)
 	
 	window = gm.createWindow(fileManager)

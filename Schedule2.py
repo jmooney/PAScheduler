@@ -254,6 +254,7 @@ class Schedule(object):
 		personalNeed = tools.pos(adviser.minSlots-adviser.nSchedSlots) + tools.pos(adviser.minSlots-adviser.nAvailSlots)
 
 		possibleConsecSize = numSlotsPrev+1+numSlotsAfter
+		print(adviser.maxSlots, self._maxSlotsPerWeek)
 		if breakSize and breakSize < self._minBreakSlots:
 			adviser.need = -1
 		if possibleConsecSize < adviser.minSlots:
