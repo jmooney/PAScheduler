@@ -12,10 +12,12 @@
 
 # Imports
 
-from FileManager import *
-from GuiManager import *
-from Schedule2 import *
-from EntryFieldArray import TypedEntry
+
+
+from bin.FileManager import *
+from bin.GuiManager import *
+from bin.Schedule import *
+from bin.EntryFieldArray import TypedEntry
 
 
 #------------------------------------------------------------------#
