@@ -44,8 +44,10 @@ class InputObject(object):
 class _DayRngInputObject(InputObject):
 	
 	daysOfTheWeek = ['M', 'T', 'W', 'Th', 'F', 'S', 'Su']
+	rvDays = daysOfTheWeek.copy();	rvDays.reverse()
 
-	dayDescriptor = '([a-zA-Z]+)'
+	dayDescriptor = ('({}' + '|{}'*(len(daysOfTheWeek)-1) + ')').format(*rvDays)	#	Reversed DaysOfWeek so that Th and Su are greedy to their counterparts
+
 	rangeFmtDescriptor = '{desc}(?:-{desc})?'
 	dayRangeDescriptor = rangeFmtDescriptor.format(desc=dayDescriptor)
 		
@@ -193,7 +195,7 @@ class Time(_DayRngInputObject):
 	
 	def getEnumeratedTimes(self):
 		enumeratedTimes = []
-		
+
 		for day in self._days:
 			row = []	
 			for hour in self._hours:

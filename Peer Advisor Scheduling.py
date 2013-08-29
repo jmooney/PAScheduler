@@ -6,14 +6,11 @@
 	PAScheduler 2 - Main
 	
 	Description:
-		The Main entry point for the Peer Adviser Scheduler
+		The Main entry point for the Peer Advisor Scheduler
 		
 '''
 
 # Imports
-
-
-
 from src.FileManager import *
 from src.GuiManager import *
 from src.Schedule import *

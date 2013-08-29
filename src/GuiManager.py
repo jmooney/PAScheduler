@@ -83,8 +83,8 @@ class GuiManager(object):
 		self._menuSchedule.add_command(label="Create", command=self._schedule.createSchedule)
 		self._menuSchedule.add_command(label="Validate", command=self._validateInput)
 		self._menuSchedule.add_separator()
-		self._menuSchedule.add_command(label="Sort By Last Name", command=partial(self._schedule.sortAdvisers, lambda adviser:adviser.name.partition(' ')[2]))
-		self._menuSchedule.add_command(label="Sort By Major", command=partial(self._schedule.sortAdvisers, lambda adviser:adviser.major))
+		self._menuSchedule.add_command(label="Sort By Last Name", command=partial(self._schedule.sortAdvisors, lambda advisor:advisor.name.partition(' ')[2]))
+		self._menuSchedule.add_command(label="Sort By Major", command=partial(self._schedule.sortAdvisors, lambda advisor:advisor.major))
 		self._menuSchedule.add_separator()
 		self._menuSchedule.add_checkbutton(label="View First Name", variable=self._firstCheckMenu, onvalue='first', offvalue='', command=self._schedule.updateText)
 		self._menuSchedule.add_checkbutton(label="View Last Name", variable=self._lastCheckMenu, onvalue='last', offvalue='', command=self._schedule.updateText)
@@ -102,8 +102,8 @@ class GuiManager(object):
 		self._hzScrollBar = ttk.Scrollbar(self._topFrame, orient=HORIZONTAL);	self._hzScrollBar.grid(row=1, column=0, sticky=(N,W,E,S))
 		self._vScrollBar = ttk.Scrollbar(self._topFrame, orient=VERTICAL);		self._vScrollBar.grid(row=0, column=1, sticky=(N,W,E,S))
 		
-		self.createPage('Advisers', EntryPage, {'numRows':31, 'numCols':8, 'title':[['Name', 'Email', 'Major', 'Year', 'Min. Hrs', 'Req. Hrs', 'Max Hrs.', 'Availability'], {'row':0}], 'width':[(0, 25), (1, 25), (7, 70)], \
-																'type':[(1, str, True), (2, str, True), (3, int, True), (4, float), (5, float), (6, float), (7, [Time], True)]})
+		self.createPage('Advisors', EntryPage, {'numRows':31, 'numCols':8, 'title':[['Name', 'Email', 'Major', 'Year', 'Minimum Hours', 'Requested Hours', 'Maximum Hours', 'Availability'],\
+								{'row':0}], 'width':[(0, 25), (1, 25), (7, 70)], 'type':[(1, str, True), (2, str, True), (3, int, True), (4, float), (5, float), (6, float), (7, [Time], True)]})
 																
 		self.createPage('Settings', EntryPage, {'numRows':10, 'numCols':2, 'title':[['Description', 'Value'], {'row':0}], 'width':[(0,70)]})
 		self._createSettings()
@@ -160,11 +160,11 @@ class GuiManager(object):
 	def _createSettings(self):
 		settingsPage = self._pages['Settings']
 		settingsPage.write('Advising Hours\tM-Th 10-6; F 10-1\n' + \
-									'Number of Active Advisers\tM-Th 3; F 2\n' + \
+									'Number of Active Advisors\tM-Th 3; F 2\n' + \
 									'Time Slot Duration (minutes)\t15\n' + \
 									'Minimum Consecutive Hours\t1\n' + \
 									'Maximum Consecutive Hours\t3\n' + \
-									'Minimum Consecutibe Break Hours\t1.5\n' + \
+									'Minimum Consecutive Break Hours\t1.5\n' + \
 									'Maximum Hours per Week\t7', begin=(1,0))
 		
 		entryTypes = [[Time], [DayDensity], int, float, float, float, float]
@@ -184,7 +184,7 @@ class GuiManager(object):
 		try:
 			current = self._notebook.select()
 			
-			self._schedule.getValidAdviserEntries()
+			self._schedule.getValidAdvisorEntries()
 			self._notebook.select(self._notebook.tabs()[1])
 			self._pages['Settings'].validate()
 			self._notebook.select(current)

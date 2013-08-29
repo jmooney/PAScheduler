@@ -3,10 +3,10 @@
 	Author:	John Mooney
 	Date:		07/16/2013
 	
-	PAScheduler 2 - Adviser
+	PAScheduler 2 - Advisor
 	
 	Description:
-		Maintains adviser-specific data and methods in scheduling.
+		Maintains advisor-specific data and methods in scheduling.
 		
 '''
 
@@ -17,7 +17,7 @@ from .TimeObj import Time
 
 #------------------------------------------------------------------#
 
-class Adviser(object):
+class Advisor(object):
 
 	def __init__(self, data):
 		super().__init__()
@@ -93,10 +93,18 @@ class Adviser(object):
 		text = ''
 		nameType = options.get('name')
 		if nameType == 'first':
-			text = '{} {}.'.format(firstName, lastName[0])
+			if options.get('pageOption') == 'page2':
+				text = '{} {}'.format(firstName, lastName)
+			else:
+				text = '{} {}.'.format(firstName, lastName[0])
+				
 		elif nameType == 'last':
-			text = '{}, {}.'.format(lastName, firstName[0])
-			
+			if options.get('pageOption') == 'page2':
+				text = '{}, {}'.format(lastName, firstName)
+			else:
+				text = '{}, {}.'.format(lastName, firstName[0])
+				
+				
 		if options.get('major'):
 			text += ' ({})'.format(self.major)
 		if options.get('email'):
@@ -105,15 +113,15 @@ class Adviser(object):
 			text += ' ' + str(self.year)
 			
 		if not text:
-			return self.formatStr(name='last')
+				return self.formatStr(name='last', pageOption=options.get('pageOption'))
 		return text
 		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
-	def __lt__(self, otherAdviser):
-		if self.need == otherAdviser.need:
-			return self.greed < otherAdviser.greed
+	def __lt__(self, otherAdvisor):
+		if self.need == otherAdvisor.need:
+			return self.greed < otherAdvisor.greed
 		else:
-			return self.need < otherAdviser.need
+			return self.need < otherAdvisor.need
 			

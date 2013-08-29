@@ -17,7 +17,7 @@ import time
 import src.tools as tools
 from .TimeSlot import *
 from .TimeObj import Time
-from .Adviser import Adviser
+from .Advisor import Advisor
 from .NotebookPage import EntryPage
 from .EntryFieldArray import InputError
 
@@ -34,10 +34,10 @@ class Schedule(object):
 
 		self.dayOrder = []
 		self._timeSlots = []
-		self._advisers = []
+		self._advisors = []
 
 		self._advisingHours = ''
-		self._adviserDensity = ''
+		self._advisorDensity = ''
 		self.timeSlotDuration = 15
 		self._minBlockHours = 0
 		self._maxBlockHours = 0
@@ -61,7 +61,7 @@ class Schedule(object):
 			self.timeSlotsPerHour = 60/self.timeSlotDuration
 
 			pageIndex = 1;	settingsPage.validate();	self._readSettings()
-			pageIndex = 0;	self.getValidAdviserEntries()
+			pageIndex = 0;	self.getValidAdvisorEntries()
 
 		except InputError:
 			self._guiMngr.getNotebook().select(self._guiMngr.getNotebook().tabs()[pageIndex])
@@ -78,11 +78,11 @@ class Schedule(object):
 		for row in self._timeSlots:
 			for slot in row:
 				slot.displayText(displayOptions)
-		self._writeAdviserSchedule(displayOptions)
+		self._writeAdvisorSchedule(displayOptions)
 		
-	def sortAdvisers(self, func):
-		self._advisers.sort(key=func)
-		self._writeAdviserSchedule(self._guiMngr.getViewOptions())
+	def sortAdvisors(self, func):
+		self._advisors.sort(key=func)
+		self._writeAdvisorSchedule(self._guiMngr.getViewOptions())
 
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -93,7 +93,7 @@ class Schedule(object):
 			times = times + timeRng.getEnumeratedTimes()
 
 		densities = []
-		for densityRng in self._adviserDensity:
+		for densityRng in self._advisorDensity:
 			for day in densityRng.getDays():
 				densities.append(densityRng.getDensity())
 
@@ -139,40 +139,40 @@ class Schedule(object):
 		
 
 	def _fillSchedule(self):
-		self._readAdvisers()
+		self._readAdvisors()
 
 		for dayRow in self._timeSlots:
 			for slot in dayRow:
-				competingAdvisers = slot.getCompetingAdvisers()
-				if not competingAdvisers:
+				competingAdvisors = slot.getCompetingAdvisors()
+				if not competingAdvisors:
 					slot.getEntry().setInvalid()
 					continue
 
 				for i in range(slot.getDensity()):
-					if not competingAdvisers:
+					if not competingAdvisors:
 						continue
 
-					maxAdviser = competingAdvisers[0]
-					for adviser in competingAdvisers:
-						numPrev, numAfter, breakSize = self._countConsecutiveBlocks(adviser, slot)
-						self._calculateNeed(adviser, slot, numPrev, numAfter, breakSize)
-						self._calculateGreed(adviser, slot, numPrev)
-						if adviser > maxAdviser:
-							maxAdviser = adviser
+					maxAdvisor = competingAdvisors[0]
+					for advisor in competingAdvisors:
+						numPrev, numAfter, breakSize = self._countConsecutiveBlocks(advisor, slot)
+						self._calculateNeed(advisor, slot, numPrev, numAfter, breakSize)
+						self._calculateGreed(advisor, slot, numPrev)
+						if advisor > maxAdvisor:
+							maxAdvisor = advisor
 
-					slot.scheduleAdviser(maxAdviser, self._guiMngr.getViewOptions())
-					competingAdvisers.remove(maxAdviser)
-					competingAdvisers.sort()
+					slot.scheduleAdvisor(maxAdvisor, self._guiMngr.getViewOptions())
+					competingAdvisors.remove(maxAdvisor)
+					competingAdvisors.sort()
 					time.sleep(self.debugDelay)
 				
-				for adv in competingAdvisers:
+				for adv in competingAdvisors:
 					adv.nAvailSlots-=1
 			
 					
 	def _createSchedulePage2(self):
-		page = self._guiMngr.createPage('Adviser Schedule', EntryPage, {'numRows':0, 'numCols':0})
-		for adviser in self._advisers:
-			adviser.consolidateHours()
+		page = self._guiMngr.createPage('Advisor Schedule', EntryPage, {'numRows':0, 'numCols':0})
+		for advisor in self._advisors:
+			advisor.consolidateHours()
 		
 		dayBar = [''] + self.dayOrder
 		page.write([dayBar], begin=(0,0))
@@ -181,8 +181,8 @@ class Schedule(object):
 		for entry in page.getEntries(row=0)[1:]:
 			entry.state(['readonly'])
 		
-		self._advisers.sort(key=lambda x:x.name.partition(' ')[2])
-		self._writeAdviserSchedule(self._guiMngr.getViewOptions())
+		self._advisors.sort(key=lambda x:x.name.partition(' ')[2])
+		self._writeAdvisorSchedule(self._guiMngr.getViewOptions())
 		page.getEntryArray().setColumnWidths([(0, 50)])
 
 
@@ -192,15 +192,15 @@ class Schedule(object):
 	def _readSettings(self):
 		settings = self._guiMngr.getPage('Settings').read(col=1)
 		self._advisingHours = settings[1]
-		self._adviserDensity = settings[2]
+		self._advisorDensity = settings[2]
 		self._minBlockHours = settings[4]
 		self._maxBlockHours = settings[5]
 		self._minBreakSlots = settings[6]*self.timeSlotsPerHour
 		self._maxSlotsPerWeek = settings[7]*self.timeSlotsPerHour
 
 
-	def _readAdvisers(self):
-		entries = self.getValidAdviserEntries()
+	def _readAdvisors(self):
+		entries = self.getValidAdvisorEntries()
 		for entryRow in entries:
 			advData = [entry.get() for entry in entryRow]
 			
@@ -209,99 +209,100 @@ class Schedule(object):
 			advData[6] = advData[6] if advData[6] != None else self._maxBlockHours
 			advData[4:7] = [d*self.timeSlotsPerHour for d in advData[4:7]]
 			
-			adviser = Adviser(advData)
-			self._addAdviser(adviser)
+			advisor = Advisor(advData)
+			self._addAdvisor(advisor)
 			
 			
-	def _writeAdviserSchedule(self, displayOptions):
-		for i in range(len(self._advisers)):
-			adviser = self._advisers[i]
+	def _writeAdvisorSchedule(self, displayOptions):
+		for i in range(len(self._advisors)):
+			advisor = self._advisors[i]
 			
-			data = [[adviser.formatStr(**displayOptions)]]
+			displayOptions.update({'pageOption':'page2'})
+			data = [[advisor.formatStr(**displayOptions)]]
 			for day in self.dayOrder:
-				data[0].append(adviser.workHoursText[day])
-			self._guiMngr.getPage('Adviser Schedule').write(data, begin=(i+1, 0))
+				data[0].append(advisor.workHoursText[day])
+			self._guiMngr.getPage('Advisor Schedule').write(data, begin=(i+1, 0))
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-	def _addAdviser(self, adviser):
-		for time in adviser.availability:
+	def _addAdvisor(self, advisor):
+		for time in advisor.availability:
 			for enumTimeRow in time.getEnumeratedTimes():
 				dayIndex = self.dayOrder.index(enumTimeRow[0].getDay())
 				dayRow = self._timeSlots[dayIndex]
 
 				for enumTime in enumTimeRow:
 					hrIndex = int((enumTime.getHour()-dayRow[0].getTime().getHour()) * self.timeSlotsPerHour)
-					dayRow[hrIndex].addCompetingAdviser(adviser)
+					dayRow[hrIndex].addCompetingAdvisor(advisor)
 
-		self._advisers.append(adviser)
+		self._advisors.append(advisor)
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-	def getValidAdviserEntries(self):
-		adviserPage = self._guiMngr.getPage('Advisers')
-		names = adviserPage.read(col=0)[1:]
+	def getValidAdvisorEntries(self):
+		advisorPage = self._guiMngr.getPage('Advisors')
+		names = advisorPage.read(col=0)[1:]
 
 		endRow = names.index(None)
 		if endRow < 0:
 			return
 
-		entries = adviserPage.getEntries(begin=(1, 0), end=(endRow, adviserPage.getEntryArray().numCols-1))
+		entries = advisorPage.getEntries(begin=(1, 0), end=(endRow, advisorPage.getEntryArray().numCols-1))
 		entries.validate()
 		return entries
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-	def _calculateNeed(self, adviser, slot, numSlotsPrev, numSlotsAfter, breakSize):
-		personalNeed = tools.pos(adviser.minSlots-adviser.nSchedSlots) + tools.pos(adviser.minSlots-adviser.nAvailSlots)
+	def _calculateNeed(self, advisor, slot, numSlotsPrev, numSlotsAfter, breakSize):
+		personalNeed = tools.pos(advisor.minSlots-advisor.nSchedSlots) + tools.pos(advisor.minSlots-advisor.nAvailSlots)
 
 		possibleConsecSize = numSlotsPrev+1+numSlotsAfter
 		if breakSize and breakSize < self._minBreakSlots:
-			adviser.need = -1
-		if possibleConsecSize < adviser.minSlots:
-			adviser.need = -1
-		elif numSlotsPrev >= adviser.maxSlots or numSlotsPrev >= self._maxSlotsPerWeek:
-			adviser.need = -1
-		elif numSlotsPrev > 0 and numSlotsPrev < adviser.minSlots:
-			adviser.need = 999
+			advisor.need = -1
+		if possibleConsecSize < advisor.minSlots:
+			advisor.need = -1
+		elif numSlotsPrev >= advisor.maxSlots or numSlotsPrev >= self._maxSlotsPerWeek:
+			advisor.need = -1
+		elif numSlotsPrev > 0 and numSlotsPrev < advisor.minSlots:
+			advisor.need = 999
 		else:
-			adviser.need = personalNeed
+			advisor.need = personalNeed
 
 
-	def _calculateGreed(self, adviser, slot, numSlotsPrev):
+	def _calculateGreed(self, advisor, slot, numSlotsPrev):
 		A = 1.2;	B = 1.0;	C = 1.0;	D = 1.5;	E=3;
 
-		nSameMajors = len([adv for adv in slot.getScheduledAdvisers() if adv.major == adviser.major])
-		avgExp = tools.getAverage([adv.year for adv in slot.getScheduledAdvisers()] + [adviser.year])
+		nSameMajors = len([adv for adv in slot.getScheduledAdvisors() if adv.major == advisor.major])
+		avgExp = tools.getAverage([adv.year for adv in slot.getScheduledAdvisors()] + [advisor.year])
 
 		personalGreed = A*tools.pos(slot.getDensity()-nSameMajors) + B*(-math.fabs(2.5 - avgExp)) + \
-						C*tools.pos(adviser.reqSlots-adviser.nSchedSlots) + D*tools.pos(adviser.reqSlots-adviser.nAvailSlots)
+						C*tools.pos(advisor.reqSlots-advisor.nSchedSlots) + D*tools.pos(advisor.reqSlots-advisor.nAvailSlots)
 
 		slotGreed = 0
-		if numSlotsPrev > 0 and numSlotsPrev < adviser.reqSlots:
+		if numSlotsPrev > 0 and numSlotsPrev < advisor.reqSlots:
 			slotGreed = E
-		elif numSlotsPrev > adviser.reqSlots:
+		elif numSlotsPrev > advisor.reqSlots:
 			slotGreed = -E
 
-		adviser.greed = personalGreed + slotGreed
+		advisor.greed = personalGreed + slotGreed
 
 
-	def _countConsecutiveBlocks(self, adviser, slot):
+	def _countConsecutiveBlocks(self, advisor, slot):
 		numPrev = 0;	tempSlot = slot
-		while tempSlot.prev and adviser in tempSlot.prev.getScheduledAdvisers():
+		while tempSlot.prev and advisor in tempSlot.prev.getScheduledAdvisors():
 			numPrev+=1
 			tempSlot = tempSlot.prev
 
 		numAfter = 0;	tempSlot = slot
-		while tempSlot.next and adviser in tempSlot.next.getCompetingAdvisers():
+		while tempSlot.next and advisor in tempSlot.next.getCompetingAdvisors():
 			numAfter+=1
 			tempSlot = tempSlot.next
 
 		breakSize=0;	tempSlot=slot
-		while tempSlot.prev and not adviser in tempSlot.prev.getScheduledAdvisers():
+		while tempSlot.prev and not advisor in tempSlot.prev.getScheduledAdvisors():
 			breakSize+=1
 			tempSlot=tempSlot.prev
 
@@ -317,10 +318,10 @@ class Schedule(object):
 	def reset(self):
 		self.dayOrder = []
 		self._timeSlots = []
-		self._advisers = []
+		self._advisors = []
 
 		self._advisingHours = ''
-		self._adviserDensity = ''
+		self._advisorDensity = ''
 		self.timeSlotDuration = 15
 		self._minBlockHours = 0
 		self._maxBlockHours = 0

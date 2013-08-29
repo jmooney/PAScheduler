@@ -6,7 +6,7 @@
 	PAScheduler 2 - TimeSlot
 	
 	Description:
-		Maintains data specific to one scheduleable slot. Provides methods for updating/changing scheduled advisers.
+		Maintains data specific to one scheduleable slot. Provides methods for updating/changing scheduled advisors.
 		
 '''
 
@@ -23,8 +23,8 @@ class TimeSlot(object):
 		
 		self._time = time
 		self._density = density
-		self._competingAdvisers = []
-		self._scheduledAdvisers = []
+		self._competingAdvisors = []
+		self._scheduledAdvisors = []
 		
 		self.next = None
 		self.prev = prev
@@ -34,18 +34,18 @@ class TimeSlot(object):
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
-	def scheduleAdviser(self, adviser, options):
-		adviser.nSchedSlots += 1
-		adviser.scheduledTimes.append(self)
+	def scheduleAdvisor(self, advisor, options):
+		advisor.nSchedSlots += 1
+		advisor.scheduledTimes.append(self)
 		
-		self._scheduledAdvisers.append(adviser)
-		self._entry.insert(0, adviser.formatStr(**options) + ' ')
+		self._scheduledAdvisors.append(advisor)
+		self._entry.insert(0, advisor.formatStr(**options) + ' ')
 		self._entry.update_idletasks()
 	
 	
 	def displayText(self, fmtOptions):
 		text = ''
-		for adv in self._scheduledAdvisers:
+		for adv in self._scheduledAdvisors:
 			text += adv.formatStr(**fmtOptions) + ' '
 		self._entry.delete(0, END)
 		self._entry.insert(0, text)
@@ -67,11 +67,11 @@ class TimeSlot(object):
 	def getEntry(self):
 		return self._entry
 		
-	def addCompetingAdviser(self, adv):
+	def addCompetingAdvisor(self, adv):
 		adv.nAvailSlots += 1
-		self._competingAdvisers.append(adv)
-	def getCompetingAdvisers(self):
-		return self._competingAdvisers
-	def getScheduledAdvisers(self):
-		return self._scheduledAdvisers
+		self._competingAdvisors.append(adv)
+	def getCompetingAdvisors(self):
+		return self._competingAdvisors
+	def getScheduledAdvisors(self):
+		return self._scheduledAdvisors
 		

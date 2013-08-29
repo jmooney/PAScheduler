@@ -84,7 +84,7 @@ class FileManager(object):
 			return False
 			
 		with open(filename, 'w') as file:
-			advPage = self._guiMngr.getPage('Advisers')
+			advPage = self._guiMngr.getPage('Advisors')
 			file.write('{}\t{}\n'.format(advPage.getName(), (1, 0)))
 			self._writePageData(advPage, file, (1, 0))
 			
