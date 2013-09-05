@@ -22,22 +22,25 @@ class Advisor(object):
 	def __init__(self, data):
 		super().__init__()
 		
-		self.name 		= data[0]
-		self.email		= data[1]
-		self.major 		= data[2]
-		self.year 		= data[3]
-		self.minSlots 	= data[4]
-		self.reqSlots 	= data[5]
-		self.maxSlots 	= data[6]
+		self.name 	= data[0]
+		self.email	= data[1]
+		self.major 	= data[2]
+		self.year 	= data[3]
+		self.minSlotsPerWeek = data[4]
+		self.reqSlotsPerWeek = data[5]
+		self.maxSlotsPerWeek = data[6]
 		self.availability = data[7]
 		
 		self.nSchedSlots = 0
 		self.nAvailSlots = 0
-		self.workHoursText = {}
 		self.scheduledTimes = []
 		self.consolidatedTimes = []
 	
-	
+		self.workHoursText = {}
+		for day in Time.schedule.dayOrder:
+			self.workHoursText[day] = ''
+			
+			
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def consolidateHours(self):
@@ -46,7 +49,7 @@ class Advisor(object):
 		
 		dayHrData 	 = []
 		hoursInRange = []
-		prevSlot 		 = None
+		prevSlot 	 = None
 		currentDay 	 = self.scheduledTimes[0].getDay()
 		
 		for timeSlot in self.scheduledTimes:
@@ -72,9 +75,7 @@ class Advisor(object):
 			dayHrData.append(Time( ([currentDay], hoursInRange) ))
 		if dayHrData:
 			self.consolidatedTimes.append(dayHrData)
-		
-		for day in Time.schedule.dayOrder:
-			self.workHoursText[day] = ''
+			
 		for day in self.consolidatedTimes:
 			text = ''
 			for timeRng in day:

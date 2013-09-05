@@ -39,10 +39,11 @@ class Schedule(object):
 		self._advisingHours = ''
 		self._advisorDensity = ''
 		self.timeSlotDuration = 15
-		self._minBlockHours = 0
-		self._maxBlockHours = 0
-		self._minBreakHours = 0
-		self._minHoursPerWeek = 0
+		self._minBlockSlots = 0
+		self._maxBlockSlots = 0
+		self._minBreakSlots = 0
+		self._minSlotsPerWeek = 0
+		self._maxSlotsPerWeek = 0
 
 		Time.schedule = self
 
@@ -140,10 +141,10 @@ class Schedule(object):
 
 	def _fillSchedule(self):
 		self._readAdvisors()
-
+		
 		for dayRow in self._timeSlots:
 			for slot in dayRow:
-				competingAdvisors = slot.getCompetingAdvisors()
+				competingAdvisors = slot.getCompetingAdvisors()[:]
 				if not competingAdvisors:
 					slot.getEntry().setInvalid()
 					continue
@@ -153,13 +154,14 @@ class Schedule(object):
 						continue
 
 					maxAdvisor = competingAdvisors[0]
+					doMax = False
 					for advisor in competingAdvisors:
 						numPrev, numAfter, breakSize = self._countConsecutiveBlocks(advisor, slot)
 						self._calculateNeed(advisor, slot, numPrev, numAfter, breakSize)
 						self._calculateGreed(advisor, slot, numPrev)
 						if advisor > maxAdvisor:
 							maxAdvisor = advisor
-
+						
 					slot.scheduleAdvisor(maxAdvisor, self._guiMngr.getViewOptions())
 					competingAdvisors.remove(maxAdvisor)
 					competingAdvisors.sort()
@@ -167,6 +169,8 @@ class Schedule(object):
 				
 				for adv in competingAdvisors:
 					adv.nAvailSlots-=1
+					
+				slot.displayCompetingAdvisors()
 			
 					
 	def _createSchedulePage2(self):
@@ -193,22 +197,21 @@ class Schedule(object):
 		settings = self._guiMngr.getPage('Settings').read(col=1)
 		self._advisingHours = settings[1]
 		self._advisorDensity = settings[2]
-		self._minBlockHours = settings[4]
-		self._maxBlockHours = settings[5]
+		self._minBlockSlots = settings[4]*self.timeSlotsPerHour
+		self._maxBlockSlots = settings[5]*self.timeSlotsPerHour
 		self._minBreakSlots = settings[6]*self.timeSlotsPerHour
-		self._maxSlotsPerWeek = settings[7]*self.timeSlotsPerHour
+		self._minSlotsPerWeek = settings[7]*self.timeSlotsPerHour
+		self._maxSlotsPerWeek = settings[8]*self.timeSlotsPerHour
 
 
 	def _readAdvisors(self):
 		entries = self.getValidAdvisorEntries()
 		for entryRow in entries:
 			advData = [entry.get() for entry in entryRow]
-			
-			advData[4] = advData[4] if advData[4] != None else self._minBlockHours
-			advData[5] = advData[5] if advData[5] != None else (self._maxBlockHours+self._minBlockHours)/2
-			advData[6] = advData[6] if advData[6] != None else self._maxBlockHours
-			advData[4:7] = [d*self.timeSlotsPerHour for d in advData[4:7]]
-			
+			advData[4] = advData[4]*self.timeSlotsPerHour if advData[4] != None else self._minSlotsPerWeek
+			advData[5] = advData[5]*self.timeSlotsPerHour if advData[5] != None else (self._maxSlotsPerWeek+self._maxSlotsPerWeek)/2
+			advData[6] = advData[6]*self.timeSlotsPerHour if advData[6] != None else self._maxSlotsPerWeek
+				
 			advisor = Advisor(advData)
 			self._addAdvisor(advisor)
 			
@@ -218,7 +221,8 @@ class Schedule(object):
 			advisor = self._advisors[i]
 			
 			displayOptions.update({'pageOption':'page2'})
-			data = [[advisor.formatStr(**displayOptions)]]
+			data = [[advisor.formatStr(**displayOptions)]]\
+			
 			for day in self.dayOrder:
 				data[0].append(advisor.workHoursText[day])
 			self._guiMngr.getPage('Advisor Schedule').write(data, begin=(i+1, 0))
@@ -257,16 +261,23 @@ class Schedule(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def _calculateNeed(self, advisor, slot, numSlotsPrev, numSlotsAfter, breakSize):
-		personalNeed = tools.pos(advisor.minSlots-advisor.nSchedSlots) + tools.pos(advisor.minSlots-advisor.nAvailSlots)
-
+		personalNeed = tools.pos(advisor.minSlotsPerWeek-advisor.nSchedSlots) + tools.pos(advisor.minSlotsPerWeek-advisor.nAvailSlots)
+		
+		Error = 'None'
 		possibleConsecSize = numSlotsPrev+1+numSlotsAfter
 		if breakSize and breakSize < self._minBreakSlots:
 			advisor.need = -1
-		if possibleConsecSize < advisor.minSlots:
+			Error = 'BreakSize'
+		elif possibleConsecSize < self._minBlockSlots:
 			advisor.need = -1
-		elif numSlotsPrev >= advisor.maxSlots or numSlotsPrev >= self._maxSlotsPerWeek:
+			Error = 'Block too small'
+		elif numSlotsPrev+1 > self._maxBlockSlots:
 			advisor.need = -1
-		elif numSlotsPrev > 0 and numSlotsPrev < advisor.minSlots:
+			Error = 'Block too big'
+		elif numSlotsPrev+1 > advisor.maxSlotsPerWeek:
+			advisor.need = -1
+			Error = 'Too many hours'
+		elif numSlotsPrev > 0 and numSlotsPrev < advisor.minSlotsPerWeek:
 			advisor.need = 999
 		else:
 			advisor.need = personalNeed
@@ -279,12 +290,12 @@ class Schedule(object):
 		avgExp = tools.getAverage([adv.year for adv in slot.getScheduledAdvisors()] + [advisor.year])
 
 		personalGreed = A*tools.pos(slot.getDensity()-nSameMajors) + B*(-math.fabs(2.5 - avgExp)) + \
-						C*tools.pos(advisor.reqSlots-advisor.nSchedSlots) + D*tools.pos(advisor.reqSlots-advisor.nAvailSlots)
+						C*tools.pos(advisor.reqSlotsPerWeek-advisor.nSchedSlots) + D*tools.pos(advisor.reqSlotsPerWeek-advisor.nAvailSlots)
 
 		slotGreed = 0
-		if numSlotsPrev > 0 and numSlotsPrev < advisor.reqSlots:
+		if numSlotsPrev > 0 and numSlotsPrev < advisor.reqSlotsPerWeek:
 			slotGreed = E
-		elif numSlotsPrev > advisor.reqSlots:
+		elif numSlotsPrev > advisor.reqSlotsPerWeek:
 			slotGreed = -E
 
 		advisor.greed = personalGreed + slotGreed
@@ -305,6 +316,8 @@ class Schedule(object):
 		while tempSlot.prev and not advisor in tempSlot.prev.getScheduledAdvisors():
 			breakSize+=1
 			tempSlot=tempSlot.prev
+		if not tempSlot.prev:
+			breakSize = 0
 
 		return numPrev, numAfter, breakSize
 
@@ -323,8 +336,8 @@ class Schedule(object):
 		self._advisingHours = ''
 		self._advisorDensity = ''
 		self.timeSlotDuration = 15
-		self._minBlockHours = 0
-		self._maxBlockHours = 0
+		self._minBlockSlots = 0
+		self._maxBlockSlots = 0
 		self._minBreakHours = 0
 		self._minHoursPerWeek = 0
 

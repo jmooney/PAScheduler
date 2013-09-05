@@ -51,6 +51,12 @@ class TimeSlot(object):
 		self._entry.insert(0, text)
 		
 		
+	def displayCompetingAdvisors(self):
+		self._entry.delete(0, END)
+		for advisor in self._competingAdvisors:
+			self._entry.insert(0, '{} {:.2f} {:.2f} '.format(advisor.formatStr(name='first'), advisor.need, advisor.greed))
+		
+		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def getTime(self):

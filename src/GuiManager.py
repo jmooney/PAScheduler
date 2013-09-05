@@ -165,9 +165,10 @@ class GuiManager(object):
 									'Minimum Consecutive Hours\t1\n' + \
 									'Maximum Consecutive Hours\t3\n' + \
 									'Minimum Consecutive Break Hours\t1.5\n' + \
+									'Minimum Hours per Week\t3\n' + \
 									'Maximum Hours per Week\t7', begin=(1,0))
 		
-		entryTypes = [[Time], [DayDensity], int, float, float, float, float]
+		entryTypes = [[Time], [DayDensity], int, float, float, float, float, float]
 
 		descEntries = settingsPage.getEntries(col=0)
 		valueEntries = settingsPage.getEntries(col=1)[1:]
