@@ -260,7 +260,7 @@ class Schedule(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def _calculateNeed(self, advisor, slot, numSlotsPrev, numSlotsAfter, breakSize):
-		personalNeed = tools.pos(advisor.minSlotsPerWeek-advisor.nSchedSlots) + tools.pos(advisor.minSlotsPerWeek-advisor.nAvailSlots)
+		personalNeed = tools.pos(advisor.minSlotsPerWeek-advisor.nSchedSlots)
 		
 		possibleConsecSize = numSlotsPrev+1+numSlotsAfter
 		if breakSize and breakSize < self._minBreakSlots:
@@ -278,19 +278,20 @@ class Schedule(object):
 
 
 	def _calculateGreed(self, advisor, slot, numSlotsPrev):
-		A = 1.2;	B = 1.0;	C = 1.0;	D = 1.5;	E=3;
+		A = 15;	B = 1.2;	C = 1.0;	D = 1.0;	E = 1.5;	F=3;	
 
 		nSameMajors = len([adv for adv in slot.getScheduledAdvisors() if adv.major == advisor.major])
 		avgExp = tools.getAverage([adv.year for adv in slot.getScheduledAdvisors()] + [advisor.year])
 
-		personalGreed = A*tools.pos(slot.getDensity()-nSameMajors) + B*(-math.fabs(2.5 - avgExp)) + \
-						C*tools.pos(advisor.reqSlotsPerWeek-advisor.nSchedSlots) + D*tools.pos(advisor.reqSlotsPerWeek-advisor.nAvailSlots)
+		personalGreed = A*tools.pos(advisor.minSlotsPerWeek-advisor.nAvailSlots) + B*tools.pos(slot.getDensity()-nSameMajors) + \
+						C*(-math.fabs(2.5 - avgExp)) + D*tools.pos(advisor.reqSlotsPerWeek-advisor.nSchedSlots) + \
+						E*tools.pos(advisor.reqSlotsPerWeek-advisor.nAvailSlots)
 
 		slotGreed = 0
 		if numSlotsPrev > 0 and numSlotsPrev < advisor.reqSlotsPerWeek:
-			slotGreed = E
+			slotGreed = F
 		elif numSlotsPrev > advisor.reqSlotsPerWeek:
-			slotGreed = -E
+			slotGreed = -F
 
 		advisor.greed = personalGreed + slotGreed
 
