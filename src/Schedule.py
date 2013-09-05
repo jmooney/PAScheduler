@@ -262,20 +262,15 @@ class Schedule(object):
 	def _calculateNeed(self, advisor, slot, numSlotsPrev, numSlotsAfter, breakSize):
 		personalNeed = tools.pos(advisor.minSlotsPerWeek-advisor.nSchedSlots) + tools.pos(advisor.minSlotsPerWeek-advisor.nAvailSlots)
 		
-		Error = 'None'
 		possibleConsecSize = numSlotsPrev+1+numSlotsAfter
 		if breakSize and breakSize < self._minBreakSlots:
 			advisor.need = -1
-			Error = 'BreakSize'
 		elif possibleConsecSize < self._minBlockSlots:
 			advisor.need = -1
-			Error = 'Block too small'
 		elif numSlotsPrev+1 > self._maxBlockSlots:
 			advisor.need = -1
-			Error = 'Block too big'
 		elif numSlotsPrev+1 > advisor.maxSlotsPerWeek:
 			advisor.need = -1
-			Error = 'Too many hours'
 		elif numSlotsPrev > 0 and numSlotsPrev < advisor.minSlotsPerWeek:
 			advisor.need = 999
 		else:
