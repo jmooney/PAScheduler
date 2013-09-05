@@ -170,7 +170,6 @@ class Schedule(object):
 				for adv in competingAdvisors:
 					adv.nAvailSlots-=1
 					
-				slot.displayCompetingAdvisors()
 			
 					
 	def _createSchedulePage2(self):
