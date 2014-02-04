@@ -1,4 +1,4 @@
-Advisers	(1, 0)
+Advisors	(1, 0)
 	Matt Katon	mkaton@gmu.edu	CIE	2				M 12-3:30	
 	Sathya Mathavan	smathavan@gmu.edu	CIE	3				T 5-6; Th 2-3 5-6	
 	Louise Pretzman	lpretzman@gmu.edu	CIE	3				T 10-1	

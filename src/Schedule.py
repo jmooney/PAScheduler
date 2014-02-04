@@ -161,8 +161,9 @@ class Schedule(object):
 						self._calculateGreed(advisor, slot, numPrev)
 						if advisor > maxAdvisor:
 							maxAdvisor = advisor
-						
-					slot.scheduleAdvisor(maxAdvisor, self._guiMngr.getViewOptions())
+					
+					if maxAdvisor.need >= 0:
+						slot.scheduleAdvisor(maxAdvisor, self._guiMngr.getViewOptions())
 					competingAdvisors.remove(maxAdvisor)
 					competingAdvisors.sort()
 					time.sleep(self.debugDelay)
