@@ -244,13 +244,20 @@ class Time(_DayRngInputObject):
 		if not hour:
 			return None
 			
+		AMHour = 8
+		PMHour = 8+12
+		
 		hour=hour.split(':')
 		
 		hr = int(hour[0])
 		if len(hour) > 1:
 			hr += int(hour[1])/cls.minsPerHour
-		if char=='p' or hr < 8:
+		if char=='p' or hr < AMHour:
 			hr += 12
+			
+		'''	Added 4/25/2014 for hours beyond closing and opening limits. Should redo with flexible numbers	'''
+		if hr > PMHour:
+			raise ValueError('Invalid Hour on Time Value')
 		
 		return hr
 		

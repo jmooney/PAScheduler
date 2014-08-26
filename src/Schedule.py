@@ -64,7 +64,7 @@ class Schedule(object):
 			pageIndex = 1;	settingsPage.validate();	self._readSettings()
 			pageIndex = 0;	self.getValidAdvisorEntries()
 
-		except InputError:
+		except ValueError:
 			self._guiMngr.getNotebook().select(self._guiMngr.getNotebook().tabs()[pageIndex])
 			return
 
@@ -145,10 +145,7 @@ class Schedule(object):
 		for dayRow in self._timeSlots:
 			for slot in dayRow:
 				competingAdvisors = slot.getCompetingAdvisors()[:]
-				if not competingAdvisors:
-					slot.getEntry().setInvalid()
-					continue
-
+				
 				for i in range(slot.getDensity()):
 					if not competingAdvisors:
 						continue
@@ -170,7 +167,8 @@ class Schedule(object):
 				
 				for adv in competingAdvisors:
 					adv.nAvailSlots-=1
-					
+				if not slot.getScheduledAdvisors():
+					slot.getEntry().setInvalid()
 			
 					
 	def _createSchedulePage2(self):

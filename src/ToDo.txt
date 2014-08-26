@@ -1,0 +1,22 @@
+	
+	Author:	John Mooney
+	Project:	PAScheduler v2.01
+
+
+Ver 2.01:
+
+	1. Extend 'tab' functionality
+		A) Create right-click context menu
+			- Close Tab, Save Page As, Validate
+	
+	2.	Automatically detect hours beyond opening/closing times
+	
+	3. Create PDF and Excel Exporters
+	
+	4. Add Undo/Redo Functionality
+	
+	5. Automatically detect errors in edit boxes
+	
+	6. Help and How-To PDF
+	
+	7. Remove Extra Setting Bar and Allow for dynamic page and column sizing

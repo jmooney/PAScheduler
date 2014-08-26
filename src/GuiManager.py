@@ -38,7 +38,7 @@ class GuiManager(object):
 	
 	def createWindow(self, fileManager):
 		win = self._window = Tk()
-		win.title("VSE Peer Advising Scheduling Program v2.00")
+		win.title("VSE Peer Mentor Scheduling Program v2.30")
 		win.geometry("800x600")
 		win.rowconfigure(0, weight=1)
 		win.columnconfigure(0, weight=1)
@@ -105,7 +105,7 @@ class GuiManager(object):
 		self.createPage('Advisors', EntryPage, {'numRows':31, 'numCols':8, 'title':[['Name', 'Email', 'Major', 'Year', 'Minimum Hours', 'Requested Hours', 'Maximum Hours', 'Availability'],\
 								{'row':0}], 'width':[(0, 25), (1, 25), (7, 70)], 'type':[(1, str, True), (2, str, True), (3, int, True), (4, float), (5, float), (6, float), (7, [Time], True)]})
 																
-		self.createPage('Settings', EntryPage, {'numRows':10, 'numCols':2, 'title':[['Description', 'Value'], {'row':0}], 'width':[(0,70)]})
+		self.createPage('Settings', EntryPage, {'numRows':9, 'numCols':2, 'title':[['Description', 'Value'], {'row':0}], 'width':[(0,70)]})
 		self._createSettings()
 	
 	
@@ -189,7 +189,7 @@ class GuiManager(object):
 			self._notebook.select(self._notebook.tabs()[1])
 			self._pages['Settings'].validate()
 			self._notebook.select(current)
-		except InputError:
+		except ValueError:
 			pass
 				
 	

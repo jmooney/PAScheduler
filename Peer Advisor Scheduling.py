@@ -29,7 +29,7 @@ def main():
 
 	schedule.setGui(gm)
 	TypedEntry.createStyle()
-	
+
 	window.mainloop()
-	
+
 main()

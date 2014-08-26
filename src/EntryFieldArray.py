@@ -40,17 +40,19 @@ class TypedEntry(ttk.Entry):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def __init__(self, parent, **kwArgs):
-		super().__init__(parent, **kwArgs)
+		super().__init__(parent, validate='focusout', validatecommand=self._validateOffFocus, **kwArgs)
 		
 		self._type = str
 		self._isArray = False
-		self._required = False
+		self._valRequired = False
 		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''	
 	
 	def getRaw(self):
 		return super().get()
+	def validate(self):
+		self.get()
 		
 	def get(self):
 		val = super().get()
@@ -63,18 +65,18 @@ class TypedEntry(ttk.Entry):
 				
 			except ValueError:
 				self['style'] = self._invalidEntryStyle
-				raise InputError(self, val)
-				
-		elif self._required:
+				raise ValueError(self, val)
+			
+			
+		elif self._valRequired:
 			self['style'] = self._invalidEntryStyle
-			raise InputError(self, '')
-			
-			
-			
-	def validate(self):
-		self.get()
+			raise ValueError(self, '')
 		
+		else:
+			self['style'] = 'TEntry'
 		
+			
+			
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''	
 	
 	def setInvalid(self):
@@ -85,7 +87,7 @@ class TypedEntry(ttk.Entry):
 	def setType(self, type, req=False):
 		self._isArray = isinstance(type, list)
 		self._type = type if not self._isArray else type[0]
-		self._required = req
+		self._valRequired = req
 	
 	def getTypeArrayDivider(self):
 		try:
@@ -95,12 +97,29 @@ class TypedEntry(ttk.Entry):
 	
 	def getType(self):
 		return self._type
+		
+	
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''	
+	
+	def _validateOffFocus(self):
+		valueRequired = self._valRequired
+		self._valRequired = False
 
+		success = True
+		try:
+			self.validate()
+		except ValueError:
+			success = False
+			
+		self._valRequired = valueRequired
+		return success
+	
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''	
 	
 	@classmethod
 	def createStyle(cls):
+		
 		estyle = ttk.Style()
 
 		estyle.element_create("plain.field", "from", "clam")
