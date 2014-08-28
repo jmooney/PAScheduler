@@ -55,7 +55,7 @@ class Schedule(object):
 		if self._timeSlots:
 			self.reset()
 
-		settingsPage = self._guiMngr.getPage('Settings')
+		settingsPage = self._guiMngr.getPage('Schedule Settings')
 
 		try:
 			self.timeSlotDuration = settingsPage.read(pos=(3,1))
@@ -192,7 +192,7 @@ class Schedule(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def _readSettings(self):
-		settings = self._guiMngr.getPage('Settings').read(col=1)
+		settings = self._guiMngr.getPage('Schedule Settings').read(col=1)
 		self._advisingHours = settings[1]
 		self._advisorDensity = settings[2]
 		self._minBlockSlots = settings[4]*self.timeSlotsPerHour
@@ -244,7 +244,7 @@ class Schedule(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def getValidAdvisorEntries(self):
-		advisorPage = self._guiMngr.getPage('Advisors')
+		advisorPage = self._guiMngr.getPage('Mentor Information')
 		names = advisorPage.read(col=0)[1:]
 
 		endRow = names.index(None)

@@ -1,4 +1,4 @@
-Advisors	(1, 0)
+Mentor Information	(1, 0)
 	Matt Katon	mkaton@gmu.edu	CIE	2				M 12-3:30	
 	Sathya Mathavan	smathavan@gmu.edu	CIE	3				T 5-6; Th 2-3 5-6	
 	Louise Pretzman	lpretzman@gmu.edu	CIE	3				T 10-1	
@@ -18,7 +18,7 @@ Advisors	(1, 0)
 	David Ballard	dballard@gmu.edu	INFT	3				W 11:30-3	
 	Dominic Nelson	dnelson@gmu.edu	INFT	2				T 10-1; Th 10-12	
 	Navjot Sagoo	nsagoo@gmu.edu	SYST	3				T 4-5; Th 4-6	
-Settings	(1, 1)
+Schedule Settings	(1, 1)
 	M-Th 10-6; F 10-12	
 	M-Th 3; F 2	
 	15	

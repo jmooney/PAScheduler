@@ -3,7 +3,7 @@
 	Project:	PAScheduler v2.01
 
 
-Ver 2.01:
+Ver 2.1:
 
 	1. Extend 'tab' functionality
 		A) Create right-click context menu
@@ -13,10 +13,8 @@ Ver 2.01:
 	
 	3. Create PDF and Excel Exporters
 	
-	4. Add Undo/Redo Functionality
-	
-	5. Automatically detect errors in edit boxes
+	4. Add Undo/Redo, Copy/Paste Functionality
 	
 	6. Help and How-To PDF
 	
-	7. Remove Extra Setting Bar and Allow for dynamic page and column sizing
+	7. Allow for dynamic page and column sizing

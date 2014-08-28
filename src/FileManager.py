@@ -84,11 +84,11 @@ class FileManager(object):
 			return False
 			
 		with open(filename, 'w') as file:
-			advPage = self._guiMngr.getPage('Advisors')
+			advPage = self._guiMngr.getPage('Mentor Information')
 			file.write('{}\t{}\n'.format(advPage.getName(), (1, 0)))
 			self._writePageData(advPage, file, (1, 0))
 			
-			setPage = self._guiMngr.getPage('Settings')
+			setPage = self._guiMngr.getPage('Schedule Settings')
 			file.write('{}\t{}\n'.format(setPage.getName(), (1, 1)))
 			self._writePageData(setPage, file, (1, 1))
 		self._workingFile = filename
@@ -101,13 +101,12 @@ class FileManager(object):
 		self.saveFile()
 		
 	
-	def savePageAs(self):
+	def savePageAs(self, pageId):
 		filename = filedialog.asksaveasfilename(defaultextension='.txt.',  filetypes=[('All types', '.*'), ('Text file', '.txt')])
 		if not filename:
 			return
 
 		with open(filename, 'w') as file:
-			pageId = self._guiMngr.getNotebook().select()
 			page = self._guiMngr.getPage(self._guiMngr.getNotebook().tab(pageId, 'text'))
 			self._writePageData(page, file, (0,0), '')
 			
