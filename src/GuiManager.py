@@ -102,10 +102,10 @@ class GuiManager(object):
 		self._menuHelp.add_command(label="About")
 		self._menuHelp.add_command(label="Frequently Asked Questions")
 		
-		self._menuPopup.add_command(label="Select", command=self._selectClickedPage)
-		self._menuPopup.add_command(label="Save As...", command=self._saveClickedPage)
+		self._menuPopup.add_command(label="Select", command=partial(self._onPageClick, "select"))
+		self._menuPopup.add_command(label="Save As...", command=partial(self._onPageClick, "saveAs"))
 		self._menuPopup.add_separator()
-		self._menuPopup.add_command(label="Close", command=self._closeClickedPage)
+		self._menuPopup.add_command(label="Close", command=partial(self._onPageClick, "close"))
 		
 		self._window['menu'] = self._menubar
 	
@@ -184,31 +184,29 @@ class GuiManager(object):
 		if not (widgetName.endswith("mainNotebook")):
 			return
 
-		tabIndex = 0
+		#	Identify Selected Page
+		self._clickedNotebookTab = 0
 		try:
-			tabIndex = event.widget.index("@{x},{y}".format(x=event.x, y=event.y))
+			self._clickedNotebookTab = event.widget.index("@{x},{y}".format(x=event.x, y=event.y))
 		except TclError:
 			return
 		
-		# Enable/Disable Popup Options for different pages
-		if(tabIndex <= 1):
+		# Enable/Disable Popup Options and Display
+		if(self._clickedNotebookTab <= 1):
 			self._menuPopup.entryconfig(4, state=DISABLED)
 		else:
 			self._menuPopup.entryconfig(4, state=NORMAL)
-			
-		# Display Popup
-		self._clickedNotebookTab = tabIndex
 		self._menuPopup.post(event.x + self._window.winfo_x(), event.y+self._window.winfo_y())
 		
 		
-	def _selectClickedPage(self):
-		self._notebook.select(self._clickedNotebookTab)
-	def _closeClickedPage(self):
-		pageName = self.getPageName(self._clickedNotebookTab)
-		self._notebook.forget(self._clickedNotebookTab)
-		del(self._pages[pageName])
-	def _saveClickedPage(self):
-		self._fileManager.savePageAs(self._clickedNotebookTab)
+	def _onPageClick(self, menuOption):
+		if(menuOption == "select"):
+			self._notebook.select(self._clickedNotebookTab)
+		elif(menuOption == "saveAs"):
+			self._fileManager.savePageAs(self._clickedNotebookTab)
+		elif(menuOption == "close"):
+			del(self._pages[self.getPageName(self._clickedNotebookTab)])
+			self._notebook.forget(self._clickedNotebookTab)
 		
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
