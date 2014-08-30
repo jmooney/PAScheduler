@@ -44,6 +44,9 @@ class Schedule(object):
 		self._minBreakSlots = 0
 		self._minSlotsPerWeek = 0
 		self._maxSlotsPerWeek = 0
+		
+		self.openHour = 8
+		self.closeHour = 8+12
 
 		Time.schedule = self
 
@@ -315,8 +318,7 @@ class Schedule(object):
 
 		return numPrev, numAfter, breakSize
 
-
-
+	
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def setGui(self, gm):

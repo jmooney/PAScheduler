@@ -122,9 +122,9 @@ class Time(_DayRngInputObject):
 	
 	schedule = None
 	minsPerHour = 60
-	
+		
 	'''	Create Regex-Descriptors	'''
-	hourDescriptor = '(\\d+(?::\\d+)?)([ap])?'
+	hourDescriptor = '(\\d{1,2}(?::\\d{1,2})?)([ap])?'
 	hourRangeDescriptor = _DayRngInputObject.rangeFmtDescriptor.format(desc=hourDescriptor)
 
 	grammarFmtDescriptor = '^\\s*{0}\\s+({1}\\s+)*{1}\\s*$'
@@ -244,8 +244,8 @@ class Time(_DayRngInputObject):
 		if not hour:
 			return None
 			
-		AMHour = 8
-		PMHour = 8+12
+		AMHour = 8#self.schedule.openHour
+		PMHour = 8+12#self.schedule.closeHour
 		
 		hour=hour.split(':')
 		

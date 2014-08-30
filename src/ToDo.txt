@@ -4,12 +4,10 @@
 
 
 Ver 2.1:
-
-	1. Extend 'tab' functionality
-		A) Create right-click context menu
-			- Close Tab, Save Page As, Validate
 	
-	2.	Automatically detect hours beyond opening/closing times
+	1. Allow For Project Saving (all Pages)
+	
+	2. Automatically detect hours beyond opening/closing times
 	
 	3. Create PDF and Excel Exporters
 	

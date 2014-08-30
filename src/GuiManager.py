@@ -63,11 +63,11 @@ class GuiManager(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def _createMenus(self, fileManager):
-		self._firstCheckMenu = StringVar()
-		self._lastCheckMenu = StringVar()
-		self._majorCheckMenu = StringVar()
-		self._emailCheckMenu = StringVar()
-		self._yearCheckMenu = StringVar()
+		self._nameCheckMenu = IntVar()
+		self._majorCheckMenu = IntVar()
+		self._emailCheckMenu = IntVar()
+		self._yearCheckMenu = IntVar()
+		self._viewNameRadio = StringVar()
 		
 		self._menubar = Menu(self._window)
 		self._menuFile = Menu(self._menubar)
@@ -93,11 +93,15 @@ class GuiManager(object):
 		self._menuSchedule.add_command(label="Sort By Last Name", command=partial(self._schedule.sortAdvisors, lambda advisor:advisor.name.partition(' ')[2]))
 		self._menuSchedule.add_command(label="Sort By Major", command=partial(self._schedule.sortAdvisors, lambda advisor:advisor.major))
 		self._menuSchedule.add_separator()
-		self._menuSchedule.add_checkbutton(label="View First Name", variable=self._firstCheckMenu, onvalue='first', offvalue='', command=self._schedule.updateText)
-		self._menuSchedule.add_checkbutton(label="View Last Name", variable=self._lastCheckMenu, onvalue='last', offvalue='', command=self._schedule.updateText)
+		self._menuSchedule.add_checkbutton(label="View Name", variable=self._nameCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
 		self._menuSchedule.add_checkbutton(label="View Major", variable=self._majorCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
 		self._menuSchedule.add_checkbutton(label="View Email", variable=self._emailCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
 		self._menuSchedule.add_checkbutton(label="View Year", variable=self._yearCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
+		self._menuSchedule.add_separator()
+		self._menuSchedule.add_radiobutton(label="First Name", variable=self._viewNameRadio, value="first", command=self._schedule.updateText)
+		self._menuSchedule.add_radiobutton(label="Last Name", variable=self._viewNameRadio, value="last", command=self._schedule.updateText)
+		self._viewNameRadio.set("first")
+		self._nameCheckMenu.set(1)
 		
 		self._menuHelp.add_command(label="About")
 		self._menuHelp.add_command(label="Frequently Asked Questions")
@@ -134,17 +138,14 @@ class GuiManager(object):
 	def getViewOptions(self):
 		keys = ['name', 'major', 'email', 'year']
 		
-		if self._firstCheckMenu.get():
-			values = ['first']
-		elif self._lastCheckMenu.get():
-			values = ['last']
-		else:
-			values = ['']
-		
+		values = ['']
+		if self._nameCheckMenu.get() == 1:
+			values = [self._viewNameRadio.get()]
+			
 		boolSVars = [self._majorCheckMenu, self._emailCheckMenu, self._yearCheckMenu]
 		for sVar in boolSVars:
 			val = sVar.get()
-			values.append(bool(int(val)) if val else False)
+			values.append(bool(val) if val else False)
 			
 		ops = {}
 		for i in range(len(keys)):
