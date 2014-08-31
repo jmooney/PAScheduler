@@ -244,8 +244,8 @@ class Time(_DayRngInputObject):
 		if not hour:
 			return None
 			
-		AMHour = 8#self.schedule.openHour
-		PMHour = 8+12#self.schedule.closeHour
+		AMHour = 8
+		PMHour = 8+12
 		
 		hour=hour.split(':')
 		
@@ -257,7 +257,7 @@ class Time(_DayRngInputObject):
 			
 		'''	Added 4/25/2014 for hours beyond closing and opening limits. Should redo with flexible numbers	'''
 		if hr > PMHour:
-			raise ValueError('Invalid Hour on Time Value')
+			raise ValueError('Invalid Hour on Time Value - Not During Open Hours')
 		
 		return hr
 		

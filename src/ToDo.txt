@@ -16,3 +16,7 @@ Ver 2.1:
 	6. Help and How-To PDF
 	
 	7. Allow for dynamic page and column sizing
+	
+	8. Fix isAltered option in FileManager
+	
+	9. Allow automatic file type association for .pas files. (And Opening) See Assoc and Ftype for windows.

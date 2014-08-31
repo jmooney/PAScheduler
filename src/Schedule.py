@@ -38,15 +38,14 @@ class Schedule(object):
 
 		self._advisingHours = ''
 		self._advisorDensity = ''
-		self.timeSlotDuration = 15
 		self._minBlockSlots = 0
 		self._maxBlockSlots = 0
 		self._minBreakSlots = 0
 		self._minSlotsPerWeek = 0
 		self._maxSlotsPerWeek = 0
 		
-		self.openHour = 8
-		self.closeHour = 8+12
+		self.timeSlotsPerHour = 4
+		self.timeSlotDuration = 15
 
 		Time.schedule = self
 
@@ -61,10 +60,7 @@ class Schedule(object):
 		settingsPage = self._guiMngr.getPage('Schedule Settings')
 
 		try:
-			self.timeSlotDuration = settingsPage.read(pos=(3,1))
-			self.timeSlotsPerHour = 60/self.timeSlotDuration
-
-			pageIndex = 1;	settingsPage.validate();	self._readSettings()
+			pageIndex = 1;	settingsPage.validate(); self.readSettings()
 			pageIndex = 0;	self.getValidAdvisorEntries()
 
 		except ValueError:
@@ -194,8 +190,12 @@ class Schedule(object):
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-	def _readSettings(self):
+	def readSettings(self):
 		settings = self._guiMngr.getPage('Schedule Settings').read(col=1)
+		
+		self.timeSlotDuration = settings[3]
+		self.timeSlotsPerHour = 60/self.timeSlotDuration
+			
 		self._advisingHours = settings[1]
 		self._advisorDensity = settings[2]
 		self._minBlockSlots = settings[4]*self.timeSlotsPerHour
@@ -203,6 +203,7 @@ class Schedule(object):
 		self._minBreakSlots = settings[6]*self.timeSlotsPerHour
 		self._minSlotsPerWeek = settings[7]*self.timeSlotsPerHour
 		self._maxSlotsPerWeek = settings[8]*self.timeSlotsPerHour
+		
 
 
 	def _readAdvisors(self):

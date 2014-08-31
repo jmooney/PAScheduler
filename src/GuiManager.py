@@ -117,7 +117,7 @@ class GuiManager(object):
 	def _createNotebook(self):
 		nb = self._notebook = ttk.Notebook(self._topFrame, name="mainNotebook", padding=(8, 20, 0, 0))
 		nb.grid(row=0, column=0, sticky=(N, W, E, S))
-		nb.bind('<<NotebookTabChanged>>', self._associateNBScrollbar)
+		nb.bind('<<NotebookTabChanged>>', self._OnNotebookPageChange)
 		
 		self._hzScrollBar = ttk.Scrollbar(self._topFrame, orient=HORIZONTAL);	self._hzScrollBar.grid(row=1, column=0, sticky=(N,W,E,S))
 		self._vScrollBar = ttk.Scrollbar(self._topFrame, orient=VERTICAL);		self._vScrollBar.grid(row=0, column=1, sticky=(N,W,E,S))
@@ -172,13 +172,13 @@ class GuiManager(object):
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-	def _associateNBScrollbar(self, *args):
+	def _OnNotebookPageChange(self, *args):
 		pageName = self._notebook.tab(self._notebook.select(), 'text')
-		canvas = self._pages[pageName].getCanvas()
-		
-		self._hzScrollBar['command'] = canvas.xview; canvas['xscrollcommand'] = self._hzScrollBar.set
-		self._vScrollBar['command'] = canvas.yview;	canvas['yscrollcommand'] = self._vScrollBar.set
-		
+
+		self._associateNBScrollbar(pageName)
+		if not "Settings" in pageName:
+			self._schedule.readSettings()
+			
 		
 	def _OnMouse3(self, event):
 		widgetName = str(event.widget)
@@ -232,8 +232,15 @@ class GuiManager(object):
 			entry.state(['readonly'])
 		for i in range(len(entryTypes)):
 			valueEntries[i].setType(entryTypes[i], True)
-				
-	
+		
+		
+	def _associateNBScrollbar(self, pageName):
+		canvas = self._pages[pageName].getCanvas()
+		
+		self._hzScrollBar['command'] = canvas.xview; canvas['xscrollcommand'] = self._hzScrollBar.set
+		self._vScrollBar['command'] = canvas.yview;	canvas['yscrollcommand'] = self._vScrollBar.set
+
+		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 		
 	def reset(self):

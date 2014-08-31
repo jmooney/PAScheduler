@@ -24,7 +24,7 @@ class FileManager(object):
 	def __init__(self, guiMngr, schedule):
 		self._guiMngr 		= guiMngr
 		self._schedule 		= schedule
-		self._isAltered 	= True
+		self._isAltered 		= True
 		self._workingFile 	= ""
 		
 		
@@ -48,7 +48,7 @@ class FileManager(object):
 			if (message and not self.saveFile()) or message == None:
 				return
 		
-		filename = filedialog.askopenfilename(defaultextension='.txt.', filetypes=[('All types', '.*'), ('Schedule file', '.pas')])
+		filename = filedialog.askopenfilename(defaultextension='.pas', filetypes=[('PA Schedule Project', '.pas'), ('All types', '.*')])
 		if not filename:
 			return
 		
@@ -71,15 +71,15 @@ class FileManager(object):
 				currentPageName, currentPageBegin = line.lstrip().split('\t')
 				currentPage = self._guiMngr.getPage(currentPageName)
 				currentPageLines = []
-				
 		#	Write trailing Page
 		if currentPage:
 					currentPage.write(currentPageLines, begin=eval(currentPageBegin))
-
+		
+		self._schedule.readSettings()
 				 
 
 	def saveFile(self):
-		filename = filedialog.asksaveasfilename(defaultextension='.pas.',  filetypes=[('All types', '.*'), ('Schedule file', '.pas')]) if not self._workingFile else self._workingFile
+		filename = filedialog.asksaveasfilename(defaultextension='.pas.',  filetypes=[('PM Schedule Project', '.pas'), ('All types', '.*')]) if not self._workingFile else self._workingFile
 		if not filename:
 			return False
 			
@@ -102,7 +102,7 @@ class FileManager(object):
 		
 	
 	def savePageAs(self, pageId):
-		filename = filedialog.asksaveasfilename(defaultextension='.txt.',  filetypes=[('All types', '.*'), ('Text file', '.txt')])
+		filename = filedialog.asksaveasfilename(defaultextension='.txt.',  filetypes=[('Text File', '.txt'), ('All types', '.*')])
 		if not filename:
 			return
 
