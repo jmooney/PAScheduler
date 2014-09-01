@@ -20,3 +20,4 @@ Ver 2.1:
 	8. Fix isAltered option in FileManager
 	
 	9. Allow automatic file type association for .pas files. (And Opening) See Assoc and Ftype for windows.
+	

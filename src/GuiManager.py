@@ -156,7 +156,7 @@ class GuiManager(object):
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
-	def createPage(self, name, pageType, pageData):
+	def createPage(self, name, pageType = EntryPage, pageData={'numRows':0, 'numCols':0}):
 		self._pages[name] = pageType(self._notebook, name, pageData)
 		return self._pages[name]
 		

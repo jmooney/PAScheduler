@@ -35,6 +35,7 @@ class Schedule(object):
 		self.dayOrder = []
 		self._timeSlots = []
 		self._advisors = []
+		self._numSchedules = 1
 
 		self._advisingHours = ''
 		self._advisorDensity = ''
@@ -107,7 +108,7 @@ class Schedule(object):
 
 
 	def _createSchedulePage1(self):
-		page = self._guiMngr.createPage('Schedule', EntryPage, {'numRows':0, 'numCols':0})
+		page = self._guiMngr.createPage('Weekly Schedule ' + str(self._numSchedules), EntryPage, {'numRows':0, 'numCols':0})
 
 		timeBar = []
 		for timeSlot in max(self._timeSlots, key=len):
@@ -171,7 +172,7 @@ class Schedule(object):
 			
 					
 	def _createSchedulePage2(self):
-		page = self._guiMngr.createPage('Advisor Schedule', EntryPage, {'numRows':0, 'numCols':0})
+		page = self._guiMngr.createPage('Mentor Schedule ' + str(self._numSchedules), EntryPage, {'numRows':0, 'numCols':0})
 		for advisor in self._advisors:
 			advisor.consolidateHours()
 		
@@ -185,7 +186,7 @@ class Schedule(object):
 		self._advisors.sort(key=lambda x:x.name.partition(' ')[2])
 		self._writeAdvisorSchedule(self._guiMngr.getViewOptions())
 		page.getEntryArray().setColumnWidths([(0, 50)])
-
+		self._numSchedules += 1
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -227,7 +228,7 @@ class Schedule(object):
 			
 			for day in self.dayOrder:
 				data[0].append(advisor.workHoursText[day])
-			self._guiMngr.getPage('Advisor Schedule').write(data, begin=(i+1, 0))
+			self._guiMngr.getPage('Mentor Schedule ' + str(self._numSchedules)).write(data, begin=(i+1, 0))
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
