@@ -252,10 +252,7 @@ class EntryFieldArray(object):
 				self._entries[i].insert(0, str(data[i]))
 		
 		else:
-			print("Writing {}# Rows".format(len(data)))
 			for i in range(len(data)):
-				print("Writing {}# Cols".format(len(data[i])))
-				print((str(data[i])) + '\n')
 				for j in range(len(data[i])):
 					self._entries[i][j].delete(0, END)
 					self._entries[i][j].insert(0, str(data[i][j]))
@@ -319,8 +316,6 @@ class EntryFieldArray(object):
 		
 		endRow = begin[0] + (len(data) if is1DList else 0) -1;	numRows = endRow+1
 		endCol  = begin[1] + (len(data[0]) if is2DList else 0) -1;	numCols = endCol+1
-		
-		print("Resizing to {}, {}".format(numRows, numCols))
 
 		if numRows > self.numRows:
 			self.resize(numRows = numRows) 

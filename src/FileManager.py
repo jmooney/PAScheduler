@@ -14,6 +14,7 @@
 # Imports
 from tkinter import filedialog
 from tkinter import messagebox
+from os.path import basename
 from .NotebookPage import *
 
 
@@ -53,17 +54,15 @@ class FileManager(object):
 			
 		self._workingFile = filename
 		with open(filename, 'r') as file:
-			#self._readMetadata(file)
 			data = [line.rstrip() for line in file.readlines() if line.rstrip()]
 		
 		currentPage = None
 		currentPageLines = []
 		for line in data:
-			if line.startswith('\t'):	#Bug is here. Ignores 'double tab' separating an empty column
-				currentPageLines.append(line.lstrip().split('\t'))
+			if line.startswith('\t'):
+				currentPageLines.append(line[1:].split('\t'))
 			else:
 				if currentPage:
-					print(str(currentPageLines) + '\n\n')
 					currentPage.write(currentPageLines, begin=eval(currentPageBegin))
 					
 				currentPageName, currentPageBegin = line.lstrip().split('\t')
@@ -88,27 +87,14 @@ class FileManager(object):
 			return False
 			
 		with open(filename, 'w') as file:
-			#self._writeMetadata(file)
-			
 			pageBegins = [(1, 0), (1, 1)]
-			for i in range(len(self._guiMngr.getPages())):
+			for i in range(2):
 				pageName = self._guiMngr.getPageName(i)
 				pageBegin = pageBegins[i] if i < len(pageBegins) else (0, 0)
 				page = self._guiMngr.getPage(pageName)
 				
 				file.write('{}\t{}\n'.format(pageName, pageBegin))
 				self._writePageData(page, file, pageBegin)
-			
-			
-			
-			
-			#advPage = self._guiMngr.getPage('Mentor Information')
-			#file.write('{}\t{}\n'.format(advPage.getName(), (1, 0)))
-			#self._writePageData(advPage, file, (1, 0))
-			
-			#setPage = self._guiMngr.getPage('Schedule Settings')
-			#file.write('{}\t{}\n'.format(setPage.getName(), (1, 1)))
-			#self._writePageData(setPage, file, (1, 1))
 			
 		self._workingFile = filename
 		return True
@@ -148,13 +134,13 @@ class FileManager(object):
 		return True
 				
 	def _askSaveDialog(self):
-		return messagebox.askyesnocancel(message='Save Project ' + self._workingFile + '?', icon='question', title='Save File?')
+		return messagebox.askyesnocancel(message='Save File ' + basename(self._workingFile) + '?', icon='question', title='Save File?')
 
 	def _writePageData(self, page, file, bg, initText='\t'):
-		for row in page.readRaw(begin=bg):
+		for row in page.getEntries(begin=bg):
 			text = initText
 			for col in row:
-				text+=colno+'\t'
+				text+=col.getRaw()+'\t'
 			if text.lstrip():
 				file.write(text + '\n')
 			
