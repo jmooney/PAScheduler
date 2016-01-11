@@ -48,6 +48,7 @@ class GuiManager(object):
 		
 		self._fileManager = fileManager
 		self._createMenus(fileManager)
+		self._createPopups()
 		
 		tf = self._topFrame = ttk.Frame(self._window)
 		tf.grid(column=0, row=0, sticky=(N, W, E, S))
@@ -108,10 +109,22 @@ class GuiManager(object):
 		
 		self._menuPopup.add_command(label="Select", command=partial(self._onPageClick, "select"))
 		self._menuPopup.add_command(label="Save As...", command=partial(self._onPageClick, "saveAs"))
+		self._menuPopup.add_command(label="Rename...", command=partial(self._onPageClick, "rename"))
 		self._menuPopup.add_separator()
 		self._menuPopup.add_command(label="Close", command=partial(self._onPageClick, "close"))
 		
 		self._window['menu'] = self._menubar
+
+	def _createPopups(self):
+		self._renameTabPopup = Toplevel()
+		self._renameTabPopup.update_idletasks()
+		self._renameTabPopup.overrideredirect(1)
+		self._renameTabPopup.withdraw()
+		
+		self._renameTabEntry = ttk.Entry(self._renameTabPopup)
+		self._renameTabEntry.pack(padx=4, pady=4)
+		self._renameTabEntry.bind("<Return>", self._onRenameTab)
+		self._renameTabEntry.bind("<Escape>", lambda e: (self._renameTabPopup.withdraw()))
 	
 	
 	def _createNotebook(self):
@@ -131,7 +144,9 @@ class GuiManager(object):
 	
 	def _registerEvents(self):
 		self._window.bind("<Button-3>", self._OnMouse3)
-		
+		self._window.bind("<Escape>", self._closeAllPopups)
+		self._window.bind("<Button-1>", self._closeAllPopups)
+
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
@@ -157,7 +172,7 @@ class GuiManager(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def createPage(self, name, pageType, pageData):
-		self._pages[name] = pageType(self._notebook, name, pageData)
+		self._pages[name] = pageType(self._notebook, len(self._pages), name, pageData)
 		return self._pages[name]
 		
 	def getPage(self, name):
@@ -187,16 +202,21 @@ class GuiManager(object):
 
 		#	Identify Selected Page
 		self._clickedNotebookTab = 0
+		self._mouse3ClickedPosition = (0, 0)
 		try:
+			self._mouse3ClickedPosition = self._window.winfo_pointerxy()
 			self._clickedNotebookTab = event.widget.index("@{x},{y}".format(x=event.x, y=event.y))
 		except TclError:
 			return
 		
-		# Enable/Disable Popup Options and Display
+		# Enable/Disable Popup Options and Display for Settings Pages
 		if(self._clickedNotebookTab <= 1):
+			self._menuPopup.entryconfig(2, state=DISABLED)
 			self._menuPopup.entryconfig(4, state=DISABLED)
 		else:
+			self._menuPopup.entryconfig(2, state=NORMAL)
 			self._menuPopup.entryconfig(4, state=NORMAL)
+
 		self._menuPopup.post(event.x + self._window.winfo_x(), event.y+self._window.winfo_y())
 		
 		
@@ -205,10 +225,32 @@ class GuiManager(object):
 			self._notebook.select(self._clickedNotebookTab)
 		elif(menuOption == "saveAs"):
 			self._fileManager.savePageAs(self._clickedNotebookTab)
+		elif(menuOption == "rename"):
+			self._renameTabPopup.geometry('+%d+%d' % self._mouse3ClickedPosition)
+			self._renameTabPopup.deiconify()
+			self._renameTabEntry.focus_set()
 		elif(menuOption == "close"):
 			del(self._pages[self.getPageName(self._clickedNotebookTab)])
 			self._notebook.forget(self._clickedNotebookTab)
 		
+
+	def _onRenameTab(self, event):
+		newPageName = self._renameTabEntry.get()
+		targetPageName = self.getPageName(self._clickedNotebookTab)
+		targetPage = self.getPage(targetPageName)
+
+		self._pages[newPageName] = targetPage
+		targetPage.setName(self._renameTabEntry.get())
+		del(self._pages[targetPageName])
+
+		self._renameTabEntry.delete(0, END)
+		self._renameTabPopup.withdraw()
+
+
+	def _closeAllPopups(self, event):
+		self._renameTabPopup.withdraw()
+		self._menuPopup.unpost()
+
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 		
