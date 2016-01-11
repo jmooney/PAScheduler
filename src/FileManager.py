@@ -14,6 +14,7 @@
 # Imports
 from tkinter import filedialog
 from tkinter import messagebox
+from os.path import basename
 from .NotebookPage import *
 
 
@@ -25,29 +26,25 @@ class FileManager(object):
 		self._guiMngr 		= guiMngr
 		self._schedule 		= schedule
 		self._isAltered 		= True
-		self._workingFile 	= ""
+		self._workingFile 	= "Untitled"
 		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def newFile(self):
-		if self._isAltered:
-			message = self._askSaveDialog()
-			if (message and not self.saveFile()) or message == None:
-				return
+		if not self._askSaveFile():
+			return
 		
 		self._guiMngr.reset()
 		self._schedule.reset()
-		self._workingFile = ""
+		self._workingFile = "Untitled"
 		
 		
 		
 	def openFile(self):
-		if self._isAltered:
-			message = self._askSaveDialog()
-			if (message and not self.saveFile()) or message == None:
-				return
-		
+		if not self._askSaveFile():
+			return
+			
 		filename = filedialog.askopenfilename(defaultextension='.pas', filetypes=[('PA Schedule Project', '.pas'), ('All types', '.*')])
 		if not filename:
 			return
@@ -63,14 +60,20 @@ class FileManager(object):
 		currentPageLines = []
 		for line in data:
 			if line.startswith('\t'):
-				currentPageLines.append(line.lstrip().split('\t'))
+				currentPageLines.append(line[1:].split('\t'))
 			else:
 				if currentPage:
 					currentPage.write(currentPageLines, begin=eval(currentPageBegin))
 					
 				currentPageName, currentPageBegin = line.lstrip().split('\t')
-				currentPage = self._guiMngr.getPage(currentPageName)
 				currentPageLines = []
+				
+				currentPage = None
+				if currentPageName in self._guiMngr.getPages():
+					currentPage = self._guiMngr.getPage(currentPageName)
+				else:
+					currentPage = self._guiMngr.createPage(currentPageName)
+					
 		#	Write trailing Page
 		if currentPage:
 					currentPage.write(currentPageLines, begin=eval(currentPageBegin))
@@ -84,13 +87,15 @@ class FileManager(object):
 			return False
 			
 		with open(filename, 'w') as file:
-			advPage = self._guiMngr.getPage('Mentor Information')
-			file.write('{}\t{}\n'.format(advPage.getName(), (1, 0)))
-			self._writePageData(advPage, file, (1, 0))
+			pageBegins = [(1, 0), (1, 1)]
+			for i in range(2):
+				pageName = self._guiMngr.getPageName(i)
+				pageBegin = pageBegins[i] if i < len(pageBegins) else (0, 0)
+				page = self._guiMngr.getPage(pageName)
+				
+				file.write('{}\t{}\n'.format(pageName, pageBegin))
+				self._writePageData(page, file, pageBegin)
 			
-			setPage = self._guiMngr.getPage('Schedule Settings')
-			file.write('{}\t{}\n'.format(setPage.getName(), (1, 1)))
-			self._writePageData(setPage, file, (1, 1))
 		self._workingFile = filename
 		return True
 		
@@ -121,14 +126,21 @@ class FileManager(object):
 				
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
+	def _askSaveFile(self):
+		if self._isAltered:
+			message = self._askSaveDialog()
+			if (message and not self.saveFile()) or message == None:
+				return False
+		return True
+				
 	def _askSaveDialog(self):
-		return messagebox.askyesnocancel(message='Save the Current Schedule?', icon='question', title='Save File?')
+		return messagebox.askyesnocancel(message='Save File ' + basename(self._workingFile) + '?', icon='question', title='Save File?')
 
 	def _writePageData(self, page, file, bg, initText='\t'):
-		for line in page.readRaw(begin=bg):
+		for row in page.getEntries(begin=bg):
 			text = initText
-			for token in line:
-				text+=token+'\t'
+			for col in row:
+				text+=col.getRaw()+'\t'
 			if text.lstrip():
 				file.write(text + '\n')
 			

@@ -135,8 +135,8 @@ class GuiManager(object):
 		self._hzScrollBar = ttk.Scrollbar(self._topFrame, orient=HORIZONTAL);	self._hzScrollBar.grid(row=1, column=0, sticky=(N,W,E,S))
 		self._vScrollBar = ttk.Scrollbar(self._topFrame, orient=VERTICAL);		self._vScrollBar.grid(row=0, column=1, sticky=(N,W,E,S))
 		
-		self.createPage('Mentor Information', EntryPage, {'numRows':31, 'numCols':8, 'title':[['Name', 'Email', 'Major', 'Year', 'Minimum Hours', 'Requested Hours', 'Maximum Hours', 'Availability'],\
-								{'row':0}], 'width':[(0, 25), (1, 25), (7, 70)], 'type':[(1, str, True), (2, str, True), (3, int, True), (4, float), (5, float), (6, float), (7, [Time], True)]})
+		self.createPage('Mentor Information', EntryPage, {'numRows':31, 'numCols':8, 'title':[['Name', 'Email', 'Major', 'Year', 'Minimum Hours', 'Requested Hours', 'Maximum Hours', 'Availability'], \
+			{'row':0}], 'width':[(0, 25), (1, 25), (7, 70)], 'type':[(1, str, True), (2, str, True), (3, int, True), (4, float), (5, float), (6, float), (7, [Time], True)]})
 																
 		self.createPage('Schedule Settings', EntryPage, {'numRows':9, 'numCols':2, 'title':[['Description', 'Value'], {'row':0}], 'width':[(0,70)]})
 		self._createSettings()
@@ -170,8 +170,8 @@ class GuiManager(object):
 		
 		
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-	
-	def createPage(self, name, pageType, pageData):
+
+	def createPage(self, name, pageType = EntryPage, pageData={'numRows':0, 'numCols':0}):
 		self._pages[name] = pageType(self._notebook, len(self._pages), name, pageData)
 		return self._pages[name]
 		
