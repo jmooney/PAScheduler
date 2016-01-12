@@ -172,7 +172,7 @@ class GuiManager(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def createPage(self, name, pageType = EntryPage, pageData={'numRows':0, 'numCols':0}):
-		self._pages[name] = pageType(self._notebook, len(self._pages), name, pageData)
+		self._pages[name] = pageType(self._notebook, name, pageData)
 		return self._pages[name]
 		
 	def getPage(self, name):
@@ -240,6 +240,7 @@ class GuiManager(object):
 		targetPage = self.getPage(targetPageName)
 
 		self._pages[newPageName] = targetPage
+		self._notebook.tab(self._clickedNotebookTab, text=newPageName)
 		targetPage.setName(self._renameTabEntry.get())
 		del(self._pages[targetPageName])
 

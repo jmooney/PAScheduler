@@ -35,7 +35,6 @@ class Schedule(object):
 		self.dayOrder = []
 		self._timeSlots = []
 		self._advisors = []
-		self._numSchedules = 1
 
 		self._advisingHours = ''
 		self._advisorDensity = ''
@@ -68,13 +67,13 @@ class Schedule(object):
 			return
 
 		try:
-			self._numSchedules += 1
+			scheduleNum = self._findAvailableScheduleNum()
+
 			self._createTimeSlots()
-			self._createSchedulePage1()
+			self._createSchedulePage1('Weekly Schedule ' + str(scheduleNum))
 			self._fillSchedule()
-			self._createSchedulePage2()
+			self._createSchedulePage2('Mentor Schedule ' + str(scheduleNum))
 		except Exception as e:
-			self._numSchedules -= 1
 			raise e
 		
 	def updateText(self):
@@ -110,8 +109,8 @@ class Schedule(object):
 			self._timeSlots.append(row)
 
 
-	def _createSchedulePage1(self, pageName='Weekly Schedule '):
-		page = self._guiMngr.createPage(pageName + str(self._numSchedules), EntryPage, {'numRows':0, 'numCols':0})
+	def _createSchedulePage1(self, pageName):
+		page = self._guiMngr.createPage(pageName, EntryPage, {'numRows':0, 'numCols':0})
 
 		timeBar = []
 		for timeSlot in max(self._timeSlots, key=len):
@@ -170,12 +169,12 @@ class Schedule(object):
 				
 				for adv in competingAdvisors:
 					adv.nAvailSlots-=1
-				if not slot.getScheduledAdvisors():
+				if len(slot.getScheduledAdvisors()) < slot.getDensity():
 					slot.getEntry().setInvalid()
 			
 					
-	def _createSchedulePage2(self):
-		page = self._guiMngr.createPage('Mentor Schedule ' + str(self._numSchedules), EntryPage, {'numRows':0, 'numCols':0})
+	def _createSchedulePage2(self, pageName):
+		page = self._guiMngr.createPage(pageName, EntryPage, {'numRows':0, 'numCols':0})
 		for advisor in self._advisors:
 			advisor.consolidateHours()
 		
@@ -187,7 +186,7 @@ class Schedule(object):
 			entry.state(['readonly'])
 		
 		self._advisors.sort(key=lambda x:x.name.partition(' ')[2])
-		self._writeAdvisorSchedule(self._guiMngr.getViewOptions())
+		self._writeAdvisorSchedule(page, self._guiMngr.getViewOptions())
 		page.getEntryArray().setColumnWidths([(0, 50)])
 
 
@@ -208,7 +207,6 @@ class Schedule(object):
 		self._maxSlotsPerWeek = settings[8]*self.timeSlotsPerHour
 		
 
-
 	def _readAdvisors(self):
 		entries = self.getValidAdvisorEntries()
 		for entryRow in entries:
@@ -221,7 +219,7 @@ class Schedule(object):
 			self._addAdvisor(advisor)
 			
 			
-	def _writeAdvisorSchedule(self, displayOptions):
+	def _writeAdvisorSchedule(self, advisorTimesPage, displayOptions):
 		for i in range(len(self._advisors)):
 			advisor = self._advisors[i]
 			
@@ -230,7 +228,7 @@ class Schedule(object):
 			
 			for day in self.dayOrder:
 				data[0].append(advisor.workHoursText[day])
-			self._guiMngr.getPage('Mentor Schedule ' + str(self._numSchedules)).write(data, begin=(i+1, 0))
+			advisorTimesPage.write(data, begin=(i+1, 0))
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -251,14 +249,14 @@ class Schedule(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def getValidAdvisorEntries(self):
-		advisorPage = self._guiMngr.getPage('Mentor Information')
-		names = advisorPage.read(col=0)[1:]
+		advisorInfoPage = self._guiMngr.getPage('Mentor Information')
+		names = advisorInfoPage.read(col=0)[1:]
 
 		endRow = names.index(None)
 		if endRow < 0:
 			return
 
-		entries = advisorPage.getEntries(begin=(1, 0), end=(endRow, advisorPage.getEntryArray().numCols-1))
+		entries = advisorInfoPage.getEntries(begin=(1, 0), end=(endRow, advisorInfoPage.getEntryArray().numCols-1))
 		entries.validate()
 		return entries
 
@@ -323,6 +321,16 @@ class Schedule(object):
 		return numPrev, numAfter, breakSize
 
 	
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+	
+	def _findAvailableScheduleNum(self):
+		s = 1
+		while ('Mentor Schedule ' + str(s) in self._guiMngr.getPages() \
+		or 'Weekly Schedule ' + str(s) in self._guiMngr.getPages()):
+			s+=1
+		return s
+
+
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def setGui(self, gm):

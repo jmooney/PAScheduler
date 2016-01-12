@@ -88,7 +88,7 @@ class FileManager(object):
 			
 		with open(filename, 'w') as file:
 			pageBegins = [(1, 0), (1, 1)]
-			for i in range(2):
+			for i in range(len(self._guiMngr.getPages())):
 				pageName = self._guiMngr.getPageName(i)
 				pageBegin = pageBegins[i] if i < len(pageBegins) else (0, 0)
 				page = self._guiMngr.getPage(pageName)
