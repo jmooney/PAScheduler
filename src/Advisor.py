@@ -80,7 +80,7 @@ class Advisor(object):
 		for day in self.consolidatedTimes:
 			text = ''
 			for timeRng in day:
-				text += timeRng.format(hour=True, time='Condensed', range=True) + " "
+				text += timeRng.format(hour=True, time='Standard', range=True) + " "
 			self.workHoursText[timeRng.getDay()] = text
 
 		
