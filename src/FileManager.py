@@ -134,7 +134,7 @@ class FileManager(object):
 
 		# 2. Get and write temporary file
 		tempFilename = None
-		with tempfile.NamedTemporaryFile(mode='w', delete=False) as tFile:
+		with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt') as tFile:
 			for i in range(2, len(self._guiMngr.getPages())):
 				pageName = self._guiMngr.getPageName(i)
 				pageBegin = (0, 0)
@@ -151,7 +151,7 @@ class FileManager(object):
 			subprocess.Popen(['sublime', tempFilename])
 			subprocess.Popen(['libreoffice', '--calc', tempFilename])
 		else:
-			subprocess.Popen(["excel.exe", tempFilename])
+			subprocess.Popen(["start", "excel.exe", tempFilename], shell=True)
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
