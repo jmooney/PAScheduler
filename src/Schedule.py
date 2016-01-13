@@ -194,10 +194,12 @@ class Schedule(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def readSettings(self):
-		settings = self._guiMngr.getPage('Schedule Settings').read(col=1)
-		
-		self.timeSlotDuration = settings[3]
+		timeSlotDurationPos = (3, 1)
+		self.timeSlotDuration = self._guiMngr.getPage('Schedule Settings')\
+			.read(pos=timeSlotDurationPos)
 		self.timeSlotsPerHour = 60/self.timeSlotDuration
+
+		settings = self._guiMngr.getPage('Schedule Settings').read(col=1)
 			
 		self._advisingHours = settings[1]
 		self._advisorDensity = settings[2]

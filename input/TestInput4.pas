@@ -55,3 +55,58 @@ Mentor Schedule 1	(0, 0)
 	Harnil Rafalia		1-2 	5-6 	10-12		
 	Rafael Reynoso		1-4				
 	Navjot Sagoo		4-5 		4-6		
+Weekly Schedule 2	(0, 0)
+		M	T	W	Th	F	
+	10:00a	Kevin A. Joey M. 	Dominic N. Louise P. 	Mariet K. Joey M. 	Dominic N. Harnil R. 	Jhonny E. Jim B. 	
+	10:15a	Kevin A. Joey M. 	Dominic N. Louise P. 	Mariet K. Joey M. 	Dominic N. Harnil R. 	Jhonny E. Jim B. 	
+	10:30a	Kevin A. Joey M. 	Dominic N. Louise P. 	Mariet K. Joey M. 	Dominic N. Harnil R. 	Jhonny E. Jim B. 	
+	10:45a	Kevin A. Joey M. 	Dominic N. Louise P. 	Mariet K. Joey M. 	Dominic N. Harnil R. 	Jhonny E. Jim B. 	
+	11:00a	Kevin A. Bobby B. 	Dominic N. Louise P. 	Mariet K. Joey M. 	Dominic N. Harnil R. 	Jhonny E. Jim B. 	
+	11:15a	Kevin A. Bobby B. 	Dominic N. Louise P. 	Mariet K. Joey M. 	Dominic N. Harnil R. 	Jhonny E. Jim B. 	
+	11:30a	Kevin A. Bobby B. 	Dominic N. Louise P. 	Mariet K. David B. 	Dominic N. Harnil R. 	Jhonny E. Jim B. 	
+	11:45a	Kevin A. Bobby B. 	Dominic N. Louise P. 	Mariet K. David B. 	Dominic N. Harnil R. 	Jhonny E. Jim B. 	
+	12:00p	Kevin A. Matt K. 	Dominic N. Louise P. 	Mariet K. David B. 			
+	12:15p	Kevin A. Matt K. 	Dominic N. Louise P. 	Mariet K. David B. 			
+	12:30p	Kevin A. Matt K. 	Dominic N. Louise P. 	Mariet K. David B. 			
+	12:45p	Kevin A. Matt K. 	Dominic N. Louise P. 	Mariet K. David B. 			
+	1:00p	Matt K. 	Harnil R. Rafael R. 	David B. Jim B. 			
+	1:15p	Matt K. 	Harnil R. Rafael R. 	David B. Jim B. 			
+	1:30p	Matt K. 	Harnil R. Rafael R. 	David B. Jim B. 			
+	1:45p	Matt K. 	Harnil R. Rafael R. 	David B. Jim B. 			
+	2:00p	Matt K. 	Rafael R. Hung D. 	David B. Jim B. 	John M. Sathya M. 		
+	2:15p	Matt K. 	Rafael R. Hung D. 	David B. Jim B. 	John M. Sathya M. 		
+	2:30p	Kevin A. Matt K. 	John M. Rafael R. Hung D. 	Jim B. 	John M. Sathya M. 		
+	2:45p	Matt K. Kevin A. 	Rafael R. John M. Hung D. 	Jim B. 	John M. Sathya M. 		
+	3:00p	Kevin A. 	Rafael R. Hung D. John M. 	Theresa C. Mark F. 	John M. Patrick N. Jhonny E. 		
+	3:15p	Kevin A. 	Rafael R. Hung D. John M. 	Theresa C. Mark F. 	John M. Jhonny E. Patrick N. 		
+	3:30p	Kevin A. Mariet K. 	John M. Rafael R. Hung D. 	Theresa C. Mark F. 	John M. Jhonny E. Patrick N. 		
+	3:45p	Kevin A. Mariet K. 	Rafael R. Hung D. 	Theresa C. Mark F. 	John M. Jhonny E. Patrick N. 		
+	4:00p	Bobby B. Patrick N. Mariet K. 	Hung D. Patrick N. Navjot S. 	Theresa C. Mark F. 	John M. Patrick N. Navjot S. 		
+	4:15p	Mariet K. Patrick N. Bobby B. 	Hung D. Patrick N. Navjot S. 	Theresa C. Mark F. 	John M. Patrick N. Navjot S. 		
+	4:30p	John M. Patrick N. Bobby B. 	Hung D. Patrick N. Navjot S. 	Theresa C. Mark F. Jhonny E. 	John M. Patrick N. Navjot S. 		
+	4:45p	John M. Patrick N. Bobby B. 	Hung D. Patrick N. Navjot S. 	Theresa C. Mark F. Jhonny E. 	John M. Patrick N. Navjot S. 		
+	5:00p	Bobby B. John M. 	Sathya M. 	Harnil R. Jhonny E. 	Sathya M. Navjot S. 		
+	5:15p	Bobby B. John M. 	Sathya M. 	Jhonny E. Harnil R. 	Navjot S. Sathya M. 		
+	5:30p	Bobby B. John M. 	Sathya M. 	Jhonny E. Harnil R. 	Navjot S. Sathya M. 		
+	5:45p	Bobby B. John M. 	Sathya M. 	Jhonny E. Harnil R. 	Navjot S. Sathya M. 		
+Mentor Schedule 2	(0, 0)
+		M	T	W	Th	F	
+	Kevin Andrea	10-1 2:30p-4 					
+	David Ballard			11:30a-2:30p 			
+	Jim Beatty			1-3 		10-12 	
+	Bobby Bounvichit	11-12 4-6 					
+	Theresa Chick			3-5 			
+	Hung Do		2-5 				
+	Jhonny Esquivel			4:30p-6 	3-4 	10-12 	
+	Mark Feghali			3-5 			
+	Matt Katon	12-3 					
+	Mariet Kurtz	3:30p-4:30p 		10-1 			
+	Sathya Mathavan		5-6 		2-3 5-6 		
+	Joey Meyer	10-11 		10-11:30a 			
+	John Mooney	4:30p-6 	2:30p-3:45p 		2-5 		
+	Dominic Nelson		10-1 		10-12 		
+	Patrick Ngo	4-5 	4-5 		3-5 		
+	Louise Pretzman		10-1 				
+	Harnil Rafalia		1-2 	5-6 	10-12 		
+	Rafael Reynoso		1-4 				
+	Navjot Sagoo		4-5 		4-6 		
