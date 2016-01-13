@@ -127,7 +127,12 @@ class FileManager(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def openInExcel(self):
-		# 1. Get and write temporary file
+		# 1. Check a valid schedule exists
+		if (len(self._guiMngr.getPages()) <= 2):
+			messagebox.showwarning("Export Error", "You need to create the schedule first!")
+			return
+
+		# 2. Get and write temporary file
 		tempFilename = None
 		with tempfile.NamedTemporaryFile(mode='w', delete=False) as tFile:
 			for i in range(2, len(self._guiMngr.getPages())):
@@ -136,16 +141,17 @@ class FileManager(object):
 				page = self._guiMngr.getPage(pageName)
 
 				tFile.write('{}\n'.format(pageName))
-				self._writePageData(page, tFile, pageBegin, '\t', '\'')
+				self._writePageData(page, tFile, pageBegin, '\t')
 				tFile.write('\n')
 			tempFilename = tFile.name
 
-			# 2. Open the tempfile in Excel
-			debug = False
-			if(debug):
-				subprocess.Popen(['sublime', tempFilename])
-			else:
-				subprocess.Popen(["excel.exe", tempFilename])
+		# 3. Open the tempfile in Excel
+		from sys import platform as _platform
+		if(_platform == "linux" or _platform == "linux2"):
+			subprocess.Popen(['sublime', tempFilename])
+			subprocess.Popen(['libreoffice', '--calc', tempFilename])
+		else:
+			subprocess.Popen(["excel.exe", tempFilename])
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -162,9 +168,9 @@ class FileManager(object):
 
 	def _writePageData(self, page, file, bg, initText='\t', formatText=''):
 		for row in page.getEntries(begin=bg):
-			text = initText + formatText
+			text = initText
 			for col in row:
-				text+=col.getRaw()+'\t' + formatText
+				text+=formatText + col.getRaw() + '\t'
 			if text.lstrip():
 				file.write(text + '\n')
 			
