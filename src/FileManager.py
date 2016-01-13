@@ -12,6 +12,8 @@
 '''
 
 # Imports
+import tempfile
+import subprocess
 from tkinter import filedialog
 from tkinter import messagebox
 from os.path import basename
@@ -97,8 +99,7 @@ class FileManager(object):
 			
 		self._workingFile = filename
 		return True
-		
-		
+
 		
 	def saveFileAs(self):
 		self._workingFile = ''
@@ -121,8 +122,32 @@ class FileManager(object):
 			if (message and not self.saveFile()) or message == None:
 				return
 		quit()
-				
-				
+
+
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+	def openInExcel(self):
+		# 1. Get and write temporary file
+		tempFilename = None
+		with tempfile.NamedTemporaryFile(mode='w', delete=False) as tFile:
+			for i in range(2, len(self._guiMngr.getPages())):
+				pageName = self._guiMngr.getPageName(i)
+				pageBegin = (0, 0)
+				page = self._guiMngr.getPage(pageName)
+
+				tFile.write('{}\n'.format(pageName))
+				self._writePageData(page, tFile, pageBegin, '\t', '\'')
+				tFile.write('\n')
+			tempFilename = tFile.name
+
+			# 2. Open the tempfile in Excel
+			debug = False
+			if(debug):
+				subprocess.Popen(['sublime', tempFilename])
+			else:
+				subprocess.Popen(["excel.exe", tempFilename])
+
+
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def _askSaveFile(self):
@@ -135,11 +160,11 @@ class FileManager(object):
 	def _askSaveDialog(self):
 		return messagebox.askyesnocancel(message='Save File ' + basename(self._workingFile) + '?', icon='question', title='Save File?')
 
-	def _writePageData(self, page, file, bg, initText='\t'):
+	def _writePageData(self, page, file, bg, initText='\t', formatText=''):
 		for row in page.getEntries(begin=bg):
-			text = initText
+			text = initText + formatText
 			for col in row:
-				text+=col.getRaw()+'\t'
+				text+=col.getRaw()+'\t' + formatText
 			if text.lstrip():
 				file.write(text + '\n')
 			

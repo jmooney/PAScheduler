@@ -91,6 +91,7 @@ class GuiManager(object):
 		self._menuFile.add_command(label='Quit', command=fileManager.askQuit)
 		
 		self._menuSchedule.add_command(label="Create", command=self._schedule.createSchedule)
+		self._menuSchedule.add_command(label="Open in Excel...", command=fileManager.openInExcel)
 		self._menuSchedule.add_separator()
 		self._menuSchedule.add_command(label="Sort By Last Name", command=partial(self._schedule.sortAdvisors, lambda advisor:advisor.name.partition(' ')[2]), state='disabled')
 		self._menuSchedule.add_command(label="Sort By Major", command=partial(self._schedule.sortAdvisors, lambda advisor:advisor.major), state='disabled')
