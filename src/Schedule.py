@@ -50,7 +50,6 @@ class Schedule(object):
 		Time.schedule = self
 
 
-
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def createSchedule(self):
@@ -76,13 +75,18 @@ class Schedule(object):
 		except Exception as e:
 			raise e
 		
+
 	def updateText(self):
 		displayOptions = self._guiMngr.getViewOptions()
 		for row in self._timeSlots:
 			for slot in row:
 				slot.displayText(displayOptions)
-		self._writeAdvisorSchedule(displayOptions)
-		
+	
+
+	###### As of 1/13/2016, this function is no longer in use; The GuiManager menu's are disabled ############	
+	######		This is due to the refactored 'writeAdvisorSchedule' which takes a page to write too
+	######		It doesn't really make sense to 'track' which page to write too, and we hope there's a different (page-specific) functionality
+	######		that can be attained.
 	def sortAdvisors(self, func):
 		self._advisors.sort(key=func)
 		self._writeAdvisorSchedule(self._guiMngr.getViewOptions())
@@ -168,7 +172,7 @@ class Schedule(object):
 					time.sleep(self.debugDelay)
 				
 				for adv in competingAdvisors:
-					adv.nAvailSlots-=1
+					adv.nAvailSlotsRem-=1
 				if len(slot.getScheduledAdvisors()) < slot.getDensity():
 					slot.getEntry().setInvalid()
 			
@@ -178,16 +182,15 @@ class Schedule(object):
 		for advisor in self._advisors:
 			advisor.consolidateHours()
 		
-		dayBar = [''] + self.dayOrder
-		page.write([dayBar], begin=(0,0))
-		
-		page.getEntries(pos=(0,0)).get().state(['disabled'])
-		for entry in page.getEntries(row=0)[1:]:
+		topBar = ['Name', 'Major', 'Email'] + self.dayOrder + ['Avail. Hours', 'Total Hours']
+		page.write([topBar], begin=(0,0))
+
+		for entry in page.getEntries(row=0):
 			entry.state(['readonly'])
 		
 		self._advisors.sort(key=lambda x:x.name.partition(' ')[2])
 		self._writeAdvisorSchedule(page, self._guiMngr.getViewOptions())
-		page.getEntryArray().setColumnWidths([(0, 50)])
+		page.getEntryArray().setColumnWidths([(1, 15), (2, 35), (8, 10), (9, 10)])
 
 
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -226,10 +229,15 @@ class Schedule(object):
 			advisor = self._advisors[i]
 			
 			displayOptions.update({'pageOption':'page2'})
-			data = [[advisor.formatStr(**displayOptions)]]\
-			
+			data = [[advisor.formatStr(**displayOptions)]]
+			data[0].append(advisor.major)
+			data[0].append(advisor.email)
+
 			for day in self.dayOrder:
 				data[0].append(advisor.workHoursText[day])
+
+			data[0].append(advisor.getAvailableHours())
+			data[0].append(advisor.getTotalHours())
 			advisorTimesPage.write(data, begin=(i+1, 0))
 
 
@@ -266,7 +274,7 @@ class Schedule(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 	def _calculateNeed(self, advisor, slot, numSlotsPrev, numSlotsAfter, breakSize):
-		personalNeed = tools.pos(advisor.minSlotsPerWeek-advisor.nSchedSlots)
+		personalNeed = tools.pos(advisor.minSlotsPerWeek-advisor.nSchedSlots)/advisor.nAvailSlots
 		
 		possibleConsecSize = numSlotsPrev+1+numSlotsAfter
 		if breakSize and breakSize < self._minBreakSlots:	
@@ -290,9 +298,9 @@ class Schedule(object):
 		needsReturning = not any( map( (lambda adv: str(adv.returning.asBool())), slot.getScheduledAdvisors()))
 		satisfiesReturning = int(needsReturning and advisor.returning.asBool())
 
-		personalGreed = A*tools.pos(advisor.minSlotsPerWeek-advisor.nAvailSlots) + B*tools.pos(slot.getDensity()-nSameMajors) + \
+		personalGreed = A*tools.pos(advisor.minSlotsPerWeek-advisor.nAvailSlotsRem) + B*tools.pos(slot.getDensity()-nSameMajors) + \
 						C*satisfiesReturning + D*tools.pos(advisor.reqSlotsPerWeek-advisor.nSchedSlots) + \
-						E*tools.pos(advisor.reqSlotsPerWeek-advisor.nAvailSlots)
+						E*tools.pos(advisor.reqSlotsPerWeek-advisor.nAvailSlotsRem)
 
 		slotGreed = 0
 		if numSlotsPrev > 0 and numSlotsPrev < advisor.reqSlotsPerWeek:

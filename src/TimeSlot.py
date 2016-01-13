@@ -75,6 +75,7 @@ class TimeSlot(object):
 		
 	def addCompetingAdvisor(self, adv):
 		adv.nAvailSlots += 1
+		adv.nAvailSlotsRem += 1
 		self._competingAdvisors.append(adv)
 	def getCompetingAdvisors(self):
 		return self._competingAdvisors

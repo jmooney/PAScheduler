@@ -33,6 +33,7 @@ class Advisor(object):
 		
 		self.nSchedSlots = 0
 		self.nAvailSlots = 0
+		self.nAvailSlotsRem = 0
 		self.scheduledTimes = []
 		self.consolidatedTimes = []
 	
@@ -118,6 +119,12 @@ class Advisor(object):
 		return text
 		
 		
+	def getTotalHours(self):
+		return self.nSchedSlots / Time.schedule.timeSlotsPerHour
+	def getAvailableHours(self):
+		return self.nAvailSlots / Time.schedule.timeSlotsPerHour
+
+
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def __lt__(self, otherAdvisor):

@@ -92,8 +92,8 @@ class GuiManager(object):
 		
 		self._menuSchedule.add_command(label="Create", command=self._schedule.createSchedule)
 		self._menuSchedule.add_separator()
-		self._menuSchedule.add_command(label="Sort By Last Name", command=partial(self._schedule.sortAdvisors, lambda advisor:advisor.name.partition(' ')[2]))
-		self._menuSchedule.add_command(label="Sort By Major", command=partial(self._schedule.sortAdvisors, lambda advisor:advisor.major))
+		self._menuSchedule.add_command(label="Sort By Last Name", command=partial(self._schedule.sortAdvisors, lambda advisor:advisor.name.partition(' ')[2]), state='disabled')
+		self._menuSchedule.add_command(label="Sort By Major", command=partial(self._schedule.sortAdvisors, lambda advisor:advisor.major), state='disabled')
 		self._menuSchedule.add_separator()
 		self._menuSchedule.add_checkbutton(label="View Name", variable=self._nameCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
 		self._menuSchedule.add_checkbutton(label="View Major", variable=self._majorCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
