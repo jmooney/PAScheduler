@@ -16,6 +16,7 @@ from tkinter import ttk
 from .NotebookPage import *
 from functools import partial
 from .TimeObj import Time, DayDensity
+from .CustomDataTypes import RestrictedStr
 from .EntryFieldArray import InputError
 
 
@@ -67,7 +68,7 @@ class GuiManager(object):
 		self._nameCheckMenu = IntVar()
 		self._majorCheckMenu = IntVar()
 		self._emailCheckMenu = IntVar()
-		self._yearCheckMenu = IntVar()
+		self._returningCheckMenu = IntVar()
 		self._viewNameRadio = StringVar()
 		
 		self._menubar = Menu(self._window)
@@ -97,7 +98,7 @@ class GuiManager(object):
 		self._menuSchedule.add_checkbutton(label="View Name", variable=self._nameCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
 		self._menuSchedule.add_checkbutton(label="View Major", variable=self._majorCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
 		self._menuSchedule.add_checkbutton(label="View Email", variable=self._emailCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
-		self._menuSchedule.add_checkbutton(label="View Year", variable=self._yearCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
+		self._menuSchedule.add_checkbutton(label="View Returning", variable=self._returningCheckMenu, onvalue=1, offvalue=0, command=self._schedule.updateText)
 		self._menuSchedule.add_separator()
 		self._menuSchedule.add_radiobutton(label="First Name", variable=self._viewNameRadio, value="first", command=self._schedule.updateText)
 		self._menuSchedule.add_radiobutton(label="Last Name", variable=self._viewNameRadio, value="last", command=self._schedule.updateText)
@@ -135,8 +136,10 @@ class GuiManager(object):
 		self._hzScrollBar = ttk.Scrollbar(self._topFrame, orient=HORIZONTAL);	self._hzScrollBar.grid(row=1, column=0, sticky=(N,W,E,S))
 		self._vScrollBar = ttk.Scrollbar(self._topFrame, orient=VERTICAL);		self._vScrollBar.grid(row=0, column=1, sticky=(N,W,E,S))
 		
-		self.createPage('Mentor Information', EntryPage, {'numRows':31, 'numCols':8, 'title':[['Name', 'Email', 'Major', 'Year', 'Minimum Hours', 'Requested Hours', 'Maximum Hours', 'Availability'], \
-			{'row':0}], 'width':[(0, 25), (1, 25), (7, 70)], 'type':[(1, str, True), (2, str, True), (3, int, True), (4, float), (5, float), (6, float), (7, [Time], True)]})
+		self.createPage('Mentor Information', EntryPage, {'numRows':31, 'numCols':8, 'title':[['Name', 'Email', 'Major', '(N)ew / (R)eturning', 'Minimum Hours', 'Requested Hours', 'Maximum Hours', 'Availability'], \
+			{'row':0}], 'width':[(0, 25), (1, 25), (3, 18), (7, 70)], 'type':[(1, str, True), (2, str, True), \
+			(3, RestrictedStr.make('[nNrR]', 1), True), \
+			(4, float), (5, float), (6, float), (7, [Time], True)]})
 																
 		self.createPage('Schedule Settings', EntryPage, {'numRows':9, 'numCols':2, 'title':[['Description', 'Value'], {'row':0}], 'width':[(0,70)]})
 		self._createSettings()
@@ -151,13 +154,13 @@ class GuiManager(object):
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def getViewOptions(self):
-		keys = ['name', 'major', 'email', 'year']
+		keys = ['name', 'major', 'email', 'returning']
 		
 		values = ['']
 		if self._nameCheckMenu.get() == 1:
 			values = [self._viewNameRadio.get()]
 			
-		boolSVars = [self._majorCheckMenu, self._emailCheckMenu, self._yearCheckMenu]
+		boolSVars = [self._majorCheckMenu, self._emailCheckMenu, self._returningCheckMenu]
 		for sVar in boolSVars:
 			val = sVar.get()
 			values.append(bool(val) if val else False)

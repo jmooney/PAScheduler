@@ -7,12 +7,6 @@ Ver 3.1:
 	1. Error when opening file twice. 
 			- Open TestInput4.pas; Open TestInput4.pas again.
 
-	2. Error when creating schedule with not 15 minute timeSlot intervals.
-		- Create a schedule with 30 min intervals, see Weekly Schedule
-		* When we read the settings page, we read and enumerate the work hours
-		*	before timeSlotDuration. This is ok, until we call schedule.reset()
-		*	which resets the timeSlotDuration to 15, and then rereads the settings.
-
 Ver 2.1:
 	
 	1. Allow For Project Saving (all Pages)

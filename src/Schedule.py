@@ -129,7 +129,6 @@ class Schedule(object):
 			for slotIndex in range(len(dayCol)):
 				slot = dayCol[slotIndex]
 
-
 				entryPos = (timeBar.index([slot.getHour(mt=False)]) + 1, dayIndex+1)
 				slot.setEntry(page.getEntries(pos=entryPos).get())
 
@@ -285,13 +284,14 @@ class Schedule(object):
 
 
 	def _calculateGreed(self, advisor, slot, numSlotsPrev):
-		A = 15;	B = 1.2;	C = 1.0;	D = 1.0;	E = 1.5;	F=3;	
+		A = 15;	B = 1.2;	C = 3.0;	D = 1.0;	E = 1.5;	F=1;	
 
 		nSameMajors = len([adv for adv in slot.getScheduledAdvisors() if adv.major == advisor.major])
-		avgExp = tools.getAverage([adv.year for adv in slot.getScheduledAdvisors()] + [advisor.year])
+		needsReturning = not any( map( (lambda adv: str(adv.returning.asBool())), slot.getScheduledAdvisors()))
+		satisfiesReturning = int(needsReturning and advisor.returning.asBool())
 
 		personalGreed = A*tools.pos(advisor.minSlotsPerWeek-advisor.nAvailSlots) + B*tools.pos(slot.getDensity()-nSameMajors) + \
-						C*(-math.fabs(2.5 - avgExp)) + D*tools.pos(advisor.reqSlotsPerWeek-advisor.nSchedSlots) + \
+						C*satisfiesReturning + D*tools.pos(advisor.reqSlotsPerWeek-advisor.nSchedSlots) + \
 						E*tools.pos(advisor.reqSlotsPerWeek-advisor.nAvailSlots)
 
 		slotGreed = 0

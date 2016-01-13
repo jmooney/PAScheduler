@@ -25,7 +25,7 @@ class Advisor(object):
 		self.name 	= data[0]
 		self.email	= data[1]
 		self.major 	= data[2]
-		self.year 	= data[3]
+		self.returning 	= data[3]
 		self.minSlotsPerWeek = data[4]
 		self.reqSlotsPerWeek = data[5]
 		self.maxSlotsPerWeek = data[6]
@@ -110,8 +110,8 @@ class Advisor(object):
 			text += ' ({})'.format(self.major)
 		if options.get('email'):
 			text += ' ' + self.email
-		if options.get('year'):
-			text += ' ' + str(self.year)
+		if options.get('returning'):
+			text += ' ' + str(self.returning)
 			
 		if not text:
 				return self.formatStr(name='last', pageOption=options.get('pageOption'))
