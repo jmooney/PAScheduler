@@ -103,10 +103,10 @@ class Schedule(object):
 		for dayIndex in range(len(times)):
 			self.dayOrder.append(times[dayIndex][0].getDay())
 
-			row = []
+			col = []
 			for i in range(len(times[dayIndex])):
-				row.append(TimeSlot(times[dayIndex][i], densities[dayIndex], row[i-1] if i-1>=0 else None))
-			self._timeSlots.append(row)
+				col.append(TimeSlot(times[dayIndex][i], densities[dayIndex], col[i-1] if i-1>=0 else None))
+			self._timeSlots.append(col)
 
 
 	def _createSchedulePage1(self, pageName):
@@ -114,22 +114,23 @@ class Schedule(object):
 
 		timeBar = []
 		for timeSlot in max(self._timeSlots, key=len):
-			timeBar.append(timeSlot.getHour(mt=False))
-		dayBar = [[day] for day in self.dayOrder]
+			timeBar.append([timeSlot.getHour(mt=False)])
+		dayBar = [[day for day in self.dayOrder]]
 
-		page.write([timeBar], begin=(0, 1))
-		page.getEntryArray().setColumnWidths([(i+1, 30) for i in range(len(timeBar))])
-		
-		page.write(dayBar, begin=(1, 0))
+		page.write(timeBar, begin=(1, 0))
 		page.getEntryArray().setColumnWidths([(0, 10)])
 		
+		page.write(dayBar, begin=(0, 1))
+		page.getEntryArray().setColumnWidths([(i+1, 30) for i in range(len(dayBar[0]))])
+
 		for dayIndex in range(len(self._timeSlots)):
-			dayRow = self._timeSlots[dayIndex]
+			dayCol = self._timeSlots[dayIndex]
 
-			for slotIndex in range(len(dayRow)):
-				slot = dayRow[slotIndex]
+			for slotIndex in range(len(dayCol)):
+				slot = dayCol[slotIndex]
 
-				entryPos = (dayIndex+1, timeBar.index(slot.getHour(mt=False)) + 1)
+
+				entryPos = (timeBar.index([slot.getHour(mt=False)]) + 1, dayIndex+1)
 				slot.setEntry(page.getEntries(pos=entryPos).get())
 
 		page.getEntries(pos=(0, 0))._entries.state(['disabled'])
@@ -144,8 +145,8 @@ class Schedule(object):
 	def _fillSchedule(self):
 		self._readAdvisors()
 		
-		for dayRow in self._timeSlots:
-			for slot in dayRow:
+		for dayCol in self._timeSlots:
+			for slot in dayCol:
 				competingAdvisors = slot.getCompetingAdvisors()[:]
 				
 				for i in range(slot.getDensity()):
@@ -237,11 +238,11 @@ class Schedule(object):
 		for time in advisor.availability:
 			for enumTimeRow in time.getEnumeratedTimes():
 				dayIndex = self.dayOrder.index(enumTimeRow[0].getDay())
-				dayRow = self._timeSlots[dayIndex]
+				dayCol = self._timeSlots[dayIndex]
 
 				for enumTime in enumTimeRow:
-					hrIndex = int((enumTime.getHour()-dayRow[0].getTime().getHour()) * self.timeSlotsPerHour)
-					dayRow[hrIndex].addCompetingAdvisor(advisor)
+					hrIndex = int((enumTime.getHour()-dayCol[0].getTime().getHour()) * self.timeSlotsPerHour)
+					dayCol[hrIndex].addCompetingAdvisor(advisor)
 
 		self._advisors.append(advisor)
 

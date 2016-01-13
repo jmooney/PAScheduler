@@ -25,7 +25,7 @@ class FileManager(object):
 	def __init__(self, guiMngr, schedule):
 		self._guiMngr 		= guiMngr
 		self._schedule 		= schedule
-		self._isAltered 		= True
+		self._isAltered 	= True
 		self._workingFile 	= "Untitled"
 		
 		
@@ -38,7 +38,6 @@ class FileManager(object):
 		self._guiMngr.reset()
 		self._schedule.reset()
 		self._workingFile = "Untitled"
-		
 		
 		
 	def openFile(self):
@@ -82,7 +81,7 @@ class FileManager(object):
 				 
 
 	def saveFile(self):
-		filename = filedialog.asksaveasfilename(defaultextension='.pas.',  filetypes=[('PM Schedule Project', '.pas'), ('All types', '.*')]) if not self._workingFile else self._workingFile
+		filename = filedialog.asksaveasfilename(defaultextension='.pas',  filetypes=[('PM Schedule Project', '.pas'), ('All types', '.*')]) if not self._workingFile else self._workingFile
 		if not filename:
 			return False
 			
