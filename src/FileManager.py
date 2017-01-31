@@ -12,6 +12,8 @@
 '''
 
 # Imports
+import tempfile
+import subprocess
 from tkinter import filedialog
 from tkinter import messagebox
 from os.path import basename
@@ -25,7 +27,7 @@ class FileManager(object):
 	def __init__(self, guiMngr, schedule):
 		self._guiMngr 		= guiMngr
 		self._schedule 		= schedule
-		self._isAltered 		= True
+		self._isAltered 	= True
 		self._workingFile 	= "Untitled"
 		
 		
@@ -38,7 +40,6 @@ class FileManager(object):
 		self._guiMngr.reset()
 		self._schedule.reset()
 		self._workingFile = "Untitled"
-		
 		
 		
 	def openFile(self):
@@ -82,13 +83,13 @@ class FileManager(object):
 				 
 
 	def saveFile(self):
-		filename = filedialog.asksaveasfilename(defaultextension='.pas.',  filetypes=[('PM Schedule Project', '.pas'), ('All types', '.*')]) if not self._workingFile else self._workingFile
+		filename = filedialog.asksaveasfilename(defaultextension='.pas',  filetypes=[('PM Schedule Project', '.pas'), ('All types', '.*')]) if not self._workingFile else self._workingFile
 		if not filename:
 			return False
 			
 		with open(filename, 'w') as file:
 			pageBegins = [(1, 0), (1, 1)]
-			for i in range(2):
+			for i in range(len(self._guiMngr.getPages())):
 				pageName = self._guiMngr.getPageName(i)
 				pageBegin = pageBegins[i] if i < len(pageBegins) else (0, 0)
 				page = self._guiMngr.getPage(pageName)
@@ -98,8 +99,7 @@ class FileManager(object):
 			
 		self._workingFile = filename
 		return True
-		
-		
+
 		
 	def saveFileAs(self):
 		self._workingFile = ''
@@ -122,8 +122,38 @@ class FileManager(object):
 			if (message and not self.saveFile()) or message == None:
 				return
 		quit()
-				
-				
+
+
+	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+	def openInExcel(self):
+		# 1. Check a valid schedule exists
+		if (len(self._guiMngr.getPages()) <= 2):
+			messagebox.showwarning("Export Error", "You need to create the schedule first!")
+			return
+
+		# 2. Get and write temporary file
+		tempFilename = None
+		with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt') as tFile:
+			for i in range(2, len(self._guiMngr.getPages())):
+				pageName = self._guiMngr.getPageName(i)
+				pageBegin = (0, 0)
+				page = self._guiMngr.getPage(pageName)
+
+				tFile.write('{}\n'.format(pageName))
+				self._writePageData(page, tFile, pageBegin, '\t')
+				tFile.write('\n')
+			tempFilename = tFile.name
+
+		# 3. Open the tempfile in Excel
+		from sys import platform as _platform
+		if(_platform == "linux" or _platform == "linux2"):
+			subprocess.Popen(['sublime', tempFilename])
+			subprocess.Popen(['libreoffice', '--calc', tempFilename])
+		else:
+			subprocess.Popen(["start", "excel.exe", tempFilename], shell=True)
+
+
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def _askSaveFile(self):
@@ -136,11 +166,11 @@ class FileManager(object):
 	def _askSaveDialog(self):
 		return messagebox.askyesnocancel(message='Save File ' + basename(self._workingFile) + '?', icon='question', title='Save File?')
 
-	def _writePageData(self, page, file, bg, initText='\t'):
+	def _writePageData(self, page, file, bg, initText='\t', formatText=''):
 		for row in page.getEntries(begin=bg):
 			text = initText
 			for col in row:
-				text+=col.getRaw()+'\t'
+				text+=formatText + col.getRaw() + '\t'
 			if text.lstrip():
 				file.write(text + '\n')
 			

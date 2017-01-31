@@ -366,7 +366,7 @@ class EntryFieldArray(object):
 		
 		self.numCols += extraCols
 
-		
+
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def _parseWriteData(self, data):

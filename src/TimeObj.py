@@ -13,31 +13,7 @@
 # Imports
 import re
 from .tools import frange
-
-
-#---------------------------------------------------------------#
-
-class InputObject(object):
-
-	def __init__(self, data):
-		super().__init__()
-		
-		if isinstance(data, str):
-			self._parseDescription(data)
-		else:
-			self._extractData(data)
-
-			
-	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-			
-	def _parseDescription(self, desc):
-		if not re.match(self.grammarDescriptor, desc):
-			raise ValueError('Invalid Input for ' + str(self.__class__) + ' Object')
-			
-	def _extractData(self):
-		raise NotImplementedError
-		
-		
+from .CustomDataTypes import InputObject
 		
 #---------------------------------------------------------------#
 
@@ -113,7 +89,6 @@ class DayDensity(_DayRngInputObject):
 		self._density = int(densDesc)
 	def getDensity(self):
 		return self._density
-		
 		
 		
 #---------------------------------------------------------------#

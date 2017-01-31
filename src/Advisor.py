@@ -25,7 +25,7 @@ class Advisor(object):
 		self.name 	= data[0]
 		self.email	= data[1]
 		self.major 	= data[2]
-		self.year 	= data[3]
+		self.returning 	= data[3]
 		self.minSlotsPerWeek = data[4]
 		self.reqSlotsPerWeek = data[5]
 		self.maxSlotsPerWeek = data[6]
@@ -33,6 +33,7 @@ class Advisor(object):
 		
 		self.nSchedSlots = 0
 		self.nAvailSlots = 0
+		self.nAvailSlotsRem = 0
 		self.scheduledTimes = []
 		self.consolidatedTimes = []
 	
@@ -79,7 +80,7 @@ class Advisor(object):
 		for day in self.consolidatedTimes:
 			text = ''
 			for timeRng in day:
-				text += timeRng.format(hour=True, time='Condensed', range=True) + " "
+				text += timeRng.format(hour=True, time='Standard', range=True) + " "
 			self.workHoursText[timeRng.getDay()] = text
 
 		
@@ -110,14 +111,20 @@ class Advisor(object):
 			text += ' ({})'.format(self.major)
 		if options.get('email'):
 			text += ' ' + self.email
-		if options.get('year'):
-			text += ' ' + str(self.year)
+		if options.get('returning'):
+			text += ' ' + str(self.returning)
 			
 		if not text:
 				return self.formatStr(name='last', pageOption=options.get('pageOption'))
 		return text
 		
 		
+	def getTotalHours(self):
+		return self.nSchedSlots / Time.schedule.timeSlotsPerHour
+	def getAvailableHours(self):
+		return self.nAvailSlots / Time.schedule.timeSlotsPerHour
+
+
 	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	
 	def __lt__(self, otherAdvisor):

@@ -20,10 +20,9 @@ from .EntryFieldArray import EntryFieldArray
 
 class NotebookPage(object):
 
-	def __init__(self, notebook, tid, name, data={}):
+	def __init__(self, notebook, name, data={}):
 		super().__init__()
 		
-		self._id = tid
 		self._name = name
 		self._owner = notebook
 		
@@ -61,7 +60,6 @@ class NotebookPage(object):
 	def getName(self):	
 		return self._name
 	def setName(self, name):
-		self._owner.tab(self._id, text=name)
 		self._name = name
 
 
